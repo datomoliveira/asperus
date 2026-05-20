@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ÁSPERUS — Tecnologia. Estratégia. Resultado.</title>
+  <meta name="description" content="ÁSPERUS é a empresa solo de Renato Maia. Desenvolvimento web, arquitetura de sistemas e consultoria técnica de alto nível." />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+
+  <!-- LOADING SCREEN -->
+  <div class="loader" id="loader" aria-label="Carregando ÁSPERUS">
+    <canvas id="loader-canvas"></canvas>
+    <div class="loader-text">
+      <span class="loader-brand">ÁSPERUS</span>
+      <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+      <span class="loader-status" id="loader-status">Iniciando...</span>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav" aria-label="Navegação principal">
+    <a href="#hero" class="nav-logo" aria-label="Início ÁSPERUS">ÁSPERUS</a>
+    <ul class="nav-links" role="list">
+      <li><a href="#about" class="nav-link">Sobre</a></li>
+      <li><a href="#services" class="nav-link">Serviços</a></li>
+      <li><a href="#projects" class="nav-link">Projetos</a></li>
+      <li><a href="#contact" class="nav-link nav-cta">Contato</a></li>
+    </ul>
+    <button class="nav-burger" id="nav-burger" aria-label="Abrir menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    <a href="#about" class="mobile-nav-link">Sobre</a>
+    <a href="#services" class="mobile-nav-link">Serviços</a>
+    <a href="#projects" class="mobile-nav-link">Projetos</a>
+    <a href="#contact" class="mobile-nav-link">Contato</a>
+  </div>
+
+  <!-- SECTION 1: HERO -->
+  <section class="hero" id="hero" aria-label="Apresentação ÁSPERUS">
+    <div class="hero-left">
+      <div class="hero-eyebrow">
+        <span class="hero-line"></span>
+        <span>Solo. Direto. Funciona.</span>
+      </div>
+      <h1 class="hero-title" id="hero-title">ÁSPERUS</h1>
+      <p class="hero-sub" id="hero-sub">Tecnologia.<br/>Estratégia.<br/>Resultado.</p>
+      <a href="#projects" class="btn-glass" id="hero-cta" aria-label="Ver projetos de Renato Maia">
+        Ver Projetos <span class="btn-arrow">↓</span>
+      </a>
+    </div>
+    <div class="hero-right" id="hero-right" aria-label="Boné 3D interativo ÁSPERUS">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-hint" aria-hidden="true">
+        <span class="hero-hint-dot"></span>
+        mova o mouse
+      </div>
+    </div>
+    <div class="hero-scroll-indicator" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <span>scroll</span>
+    </div>
+  </section>
+
+  <!-- SECTION 2: ABOUT -->
+  <section class="about" id="about" aria-label="Sobre Renato Maia">
+    <div class="about-grid">
+      <div class="about-visual">
+        <canvas id="avatar-canvas" aria-label="Avatar 3D de Renato Maia"></canvas>
+        <div class="about-stats">
+          <div class="stat-card glass-card">
+            <span class="stat-num">01</span>
+            <span class="stat-label">Pessoa</span>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-num">12+</span>
+            <span class="stat-label">Projetos</span>
+          </div>
+          <div class="stat-card glass-card">
+            <span class="stat-num">7</span>
+            <span class="stat-label">Anos</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-text">
+        <span class="section-tag">/ sobre</span>
+        <h2 class="section-title about-headline">
+          <span class="split-word">Não é</span>
+          <span class="split-word">agência.</span>
+          <span class="split-word accent-gold">É resultado.</span>
+        </h2>
+        <p class="about-body">
+          Renato Maia. Desenvolvedor, arquiteto de sistemas e estrategista digital.
+          Trabalho sozinho — e é exatamente por isso que funciona. Sem camadas, sem
+          jogo de telefone, sem reunião que vira e-mail. Você fala direto com quem faz.
+        </p>
+        <p class="about-body">
+          ÁSPERUS não é sobre perfumar o processo. É sobre entregar o que importa,
+          no prazo, com a qualidade que você não esperava pagar.
+        </p>
+        <div class="about-badges">
+          <span class="badge">Full-Stack</span>
+          <span class="badge">Three.js</span>
+          <span class="badge">Node.js</span>
+          <span class="badge">React</span>
+          <span class="badge">Cloud</span>
+        </div>
+      </div>
+    </div>
+    <div class="dot-grid" aria-hidden="true"></div>
+  </section>
+
+  <!-- SECTION 3: SERVICES -->
+  <section class="services" id="services" aria-label="Serviços da ÁSPERUS">
+    <div class="section-header">
+      <span class="section-tag">/ serviços</span>
+      <h2 class="section-title">O que entrego</h2>
+    </div>
+    <div class="services-grid">
+      <article class="service-card glass-card" id="svc-1" aria-label="Desenvolvimento Web">
+        <div class="service-icon-wrap">
+          <canvas class="service-canvas" data-service="web" aria-label="Ícone 3D desenvolvimento web"></canvas>
+        </div>
+        <h3 class="service-name">Desenvolvimento Web</h3>
+        <p class="service-desc">Front e back sem separação artificial. Do design à infra, em um ciclo só.</p>
+        <span class="service-tag">Full-Stack</span>
+      </article>
+      <article class="service-card glass-card" id="svc-2" aria-label="Arquitetura de Sistemas">
+        <div class="service-icon-wrap">
+          <canvas class="service-canvas" data-service="arch" aria-label="Ícone 3D arquitetura de sistemas"></canvas>
+        </div>
+        <h3 class="service-name">Arquitetura de Sistemas</h3>
+        <p class="service-desc">Sistemas que escalam sem quebrar. Desenhados para durar, não para impressionar.</p>
+        <span class="service-tag">Backend / Cloud</span>
+      </article>
+      <article class="service-card glass-card" id="svc-3" aria-label="Produtos Digitais">
+        <div class="service-icon-wrap">
+          <canvas class="service-canvas" data-service="product" aria-label="Ícone 3D produtos digitais"></canvas>
+        </div>
+        <h3 class="service-name">Produtos Digitais</h3>
+        <p class="service-desc">Da ideia ao MVP com velocidade e foco. Lançamento em semanas, não trimestres.</p>
+        <span class="service-tag">SaaS / Apps</span>
+      </article>
+      <article class="service-card glass-card" id="svc-4" aria-label="Consultoria Técnica">
+        <div class="service-icon-wrap">
+          <canvas class="service-canvas" data-service="consult" aria-label="Ícone 3D consultoria técnica"></canvas>
+        </div>
+        <h3 class="service-name">Consultoria Técnica</h3>
+        <p class="service-desc">Diagnóstico honesto. Sem relatório de 80 páginas — só o que muda o jogo.</p>
+        <span class="service-tag">Strategy / Audit</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECTION 4: PROJECTS -->
+  <section class="projects" id="projects" aria-label="Projetos de Renato Maia">
+    <div class="section-header">
+      <span class="section-tag">/ projetos</span>
+      <h2 class="section-title">Cases reais</h2>
+    </div>
+    <div class="projects-grid">
+      <article class="project-card" id="proj-1" aria-label="Projeto Nexus Platform">
+        <div class="project-num" aria-hidden="true">01</div>
+        <div class="project-thumb">
+          <div class="project-visual" data-color="#C4A96B"></div>
+          <div class="project-overlay glass-card">
+            <span>Ver case →</span>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-name">Nexus Platform</h3>
+          <div class="project-tags">
+            <span class="proj-tag">React</span>
+            <span class="proj-tag">Node.js</span>
+            <span class="proj-tag">PostgreSQL</span>
+          </div>
+        </div>
+      </article>
+      <article class="project-card" id="proj-2" aria-label="Projeto Orbit Dashboard">
+        <div class="project-num" aria-hidden="true">02</div>
+        <div class="project-thumb">
+          <div class="project-visual" data-color="#E24B4A"></div>
+          <div class="project-overlay glass-card">
+            <span>Ver case →</span>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-name">Orbit Dashboard</h3>
+          <div class="project-tags">
+            <span class="proj-tag">Next.js</span>
+            <span class="proj-tag">TypeScript</span>
+            <span class="proj-tag">AWS</span>
+          </div>
+        </div>
+      </article>
+      <article class="project-card project-card--wide" id="proj-3" aria-label="Projeto Flux API Gateway">
+        <div class="project-num" aria-hidden="true">03</div>
+        <div class="project-thumb">
+          <div class="project-visual" data-color="#4A6BE2"></div>
+          <div class="project-overlay glass-card">
+            <span>Ver case →</span>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-name">Flux API Gateway</h3>
+          <div class="project-tags">
+            <span class="proj-tag">Go</span>
+            <span class="proj-tag">Cloudflare</span>
+            <span class="proj-tag">Microservices</span>
+          </div>
+        </div>
+      </article>
+      <article class="project-card" id="proj-4" aria-label="Projeto Vela Commerce">
+        <div class="project-num" aria-hidden="true">04</div>
+        <div class="project-thumb">
+          <div class="project-visual" data-color="#6BE2A4"></div>
+          <div class="project-overlay glass-card">
+            <span>Ver case →</span>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-name">Vela Commerce</h3>
+          <div class="project-tags">
+            <span class="proj-tag">React Native</span>
+            <span class="proj-tag">Stripe</span>
+            <span class="proj-tag">Firebase</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SECTION 5: CONTACT -->
+  <section class="contact" id="contact" aria-label="Contato com Renato Maia">
+    <canvas id="contact-canvas" aria-label="Logo ÁSPERUS em wireframe 3D" aria-hidden="true"></canvas>
+    <div class="contact-content">
+      <div class="section-header">
+        <span class="section-tag">/ contato</span>
+        <h2 class="section-title">Vamos conversar.</h2>
+        <p class="contact-sub">Sem formulário de 15 campos. Só o essencial.</p>
+      </div>
+      <form class="contact-form" id="contact-form" novalidate aria-label="Formulário de contato">
+        <div class="form-group">
+          <input type="text" id="field-name" name="name" class="neuro-input" placeholder=" " required autocomplete="name" aria-required="true" />
+          <label for="field-name" class="form-label">Seu nome</label>
+        </div>
+        <div class="form-group">
+          <input type="email" id="field-email" name="email" class="neuro-input" placeholder=" " required autocomplete="email" aria-required="true" />
+          <label for="field-email" class="form-label">E-mail</label>
+        </div>
+        <div class="form-group">
+          <textarea id="field-msg" name="message" class="neuro-input neuro-textarea" placeholder=" " required rows="4" aria-required="true"></textarea>
+          <label for="field-msg" class="form-label">Sobre o projeto</label>
+        </div>
+        <button type="submit" class="btn-submit" id="btn-submit" aria-label="Enviar mensagem">
+          <span class="btn-submit-text">Enviar mensagem</span>
+          <span class="btn-submit-particles" aria-hidden="true"></span>
+        </button>
+      </form>
+      <div class="contact-socials">
+        <a href="https://github.com/datomoliveira" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub de Renato Maia">
+          <span class="social-icon">GH</span>GitHub
+        </a>
+        <a href="#" class="social-link" aria-label="LinkedIn de Renato Maia">
+          <span class="social-icon">LI</span>LinkedIn
+        </a>
+        <a href="mailto:renato@asperus.dev" class="social-link" aria-label="E-mail direto para Renato Maia">
+          <span class="social-icon">@</span>E-mail
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: FOOTER -->
+  <footer class="footer" aria-label="Rodapé ÁSPERUS">
+    <div class="footer-inner">
+      <button class="footer-logo" id="footer-logo" aria-label="Easter egg: clique para ver o boné">ÁSPERUS</button>
+      <p class="footer-copy">© 2025 ÁSPERUS. Feito por Renato Maia.</p>
+      <p class="footer-tagline">Um dev. Zero bullshit.</p>
+    </div>
+    <div class="footer-cap-easter" id="footer-cap-easter" aria-hidden="true">
+      <canvas id="footer-cap-canvas"></canvas>
+    </div>
+  </footer>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/SplitText.min.js"></script>
+
+  <!-- APP SCRIPTS (ES Modules) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
