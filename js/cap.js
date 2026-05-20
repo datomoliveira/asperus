@@ -254,30 +254,32 @@ export function buildCap() {
   });
 
   /* ── COPA (Crown) — alta e arredondada, como 6-panel fitted ── */
-  // Na foto: copa bem alta, dome pronunciado, base reta
-  // Usamos SphereGeometry com phiLength > PI/2 para copa mais alta
+  // thetaLength = 0.58*PI → bottom at y = cos(0.58*PI) ≈ -0.227
+  // So crown spans from y=+1 (top) to y≈-0.227, with position offset 0.12
   const crownGeo = new THREE.SphereGeometry(
-    1,      // radius
-    64,     // widthSegs
-    48,     // heightSegs
-    0,      // phiStart
-    Math.PI * 2,  // phiLength (full circle)
-    0,      // thetaStart (top)
-    Math.PI * 0.58 // thetaLength — copa alta (> meio-esfera)
+    1,            // radius
+    64,           // widthSegs
+    48,           // heightSegs
+    0,            // phiStart
+    Math.PI * 2,  // phiLength
+    0,            // thetaStart (from top)
+    Math.PI * 0.58 // thetaLength — copa alta
   );
   const crown = new THREE.Mesh(crownGeo, fabric);
-  crown.position.y = 0.06;
+  crown.castShadow = true;
+  crown.position.y = 0.12;
   cap.add(crown);
 
-  /* ── BASE BAND — faixa estrutural na base da copa ── */
-  // Na foto: banda leve onde a copa encontra o aro
-  const bandGeo = new THREE.CylinderGeometry(1.01, 1.0, 0.18, 64);
+  /* ── BASE BAND ── */
+  // bottom of crown at y = 0.12 + cos(0.58*PI)*1 ≈ 0.12 - 0.227 = -0.107
+  const bandGeo = new THREE.CylinderGeometry(1.01, 1.0, 0.20, 64);
   const bandMat = new THREE.MeshStandardMaterial({
     color: 0x0a0a0a, roughness: 0.97, metalness: 0.0,
     map: knitTex,
   });
   const band = new THREE.Mesh(bandGeo, bandMat);
-  band.position.y = -0.04;
+  band.castShadow = true;
+  band.position.y = -0.10;
   cap.add(band);
 
   /* ── 6 PANEL SEAMS (costuras radiais) ── */
@@ -293,6 +295,7 @@ export function buildCap() {
 
   /* ── ABA (Brim) ── */
   const brim = new THREE.Mesh(makeBrimGeometry(), fabric);
+  brim.castShadow = true;
   cap.add(brim);
 
   /* ── BRIM EDGE STITCH — filete de costura na borda da aba ── */
@@ -327,17 +330,19 @@ export function buildCap() {
   cap.add(sweat);
 
   /* ── TOP BUTTON (botão no topo) ── */
-  // Na foto: pequeno botão circular no ápice, de tecido
-  const btnGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.06, 8);
-  const btnDiscGeo = new THREE.CylinderGeometry(0.11, 0.11, 0.02, 8);
+  // crown apex: crown.position.y(0.12) + radius(1.0) = 1.12
+  const btnGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.08, 8);
+  const btnDiscGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.025, 8);
   const btnMat = new THREE.MeshStandardMaterial({
     color: 0x111111, roughness: 0.95, map: knitTex
   });
   const btn = new THREE.Mesh(btnGeo, btnMat);
-  btn.position.y = 0.58 + 0.06; // top of high crown
+  btn.castShadow = true;
+  btn.position.y = 1.16;
   cap.add(btn);
   const btnDisc = new THREE.Mesh(btnDiscGeo, btnMat);
-  btnDisc.position.y = 0.58 + 0.09;
+  btnDisc.castShadow = true;
+  btnDisc.position.y = 1.21;
   cap.add(btnDisc);
 
   /* ── LOGO ÁSPERUS bordado frontal ── */

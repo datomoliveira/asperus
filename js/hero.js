@@ -1,8 +1,5 @@
-// hero.js — Hero Three.js scene com boné 3D interativo
+// hero.js — Cena hero robusta, sem dependências de addons que falham silenciosamente
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { buildCap } from './cap.js';
 
 export function initHeroScene() {
@@ -14,255 +11,235 @@ export function initHeroScene() {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
+  renderer.toneMappingExposure = 1.6;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setClearColor(0x000000, 0); // transparente
 
   /* ── Scene ── */
   const scene = new THREE.Scene();
 
   /* ── Camera ── */
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0.3, 4.5);
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+  camera.position.set(0, 0.5, 5);
+  camera.lookAt(0, 0.2, 0);
 
-  /* ── Lights ── */
-  // Minimal ambient
-  const ambient = new THREE.AmbientLight(0xE8E2D9, 0.18);
-  scene.add(ambient);
+  /* ── Luzes — dramáticas como na foto do boné ── */
+  // Ambient mínimo (não achatar shape)
+  scene.add(new THREE.AmbientLight(0xffffff, 0.12));
 
-  // Dramatic spotlight top-right (warm)
-  const spot = new THREE.SpotLight(0xffd9a0, 6, 20, Math.PI / 6, 0.4, 1.5);
-  spot.position.set(3, 6, 3);
-  spot.castShadow = true;
-  spot.shadow.mapSize.set(1024, 1024);
-  scene.add(spot);
-  scene.add(spot.target);
+  // Key light: topo-direita, quente — principal revelador de textura
+  const keyLight = new THREE.SpotLight(0xffd9b0, 18, 30, Math.PI / 5, 0.35, 1.2);
+  keyLight.position.set(3.5, 6, 3);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(2048, 2048);
+  scene.add(keyLight);
+  scene.add(keyLight.target);
 
-  // Soft fill from left (cool tint)
-  const fill = new THREE.DirectionalLight(0x8090c0, 0.4);
-  fill.position.set(-4, 2, 2);
-  scene.add(fill);
+  // Fill suave da esquerda (cool tint)
+  const fillLight = new THREE.DirectionalLight(0xa0c0e8, 1.2);
+  fillLight.position.set(-5, 2, 2);
+  scene.add(fillLight);
 
-  // Rim light (behind, defines silhouette)
-  const rim = new THREE.DirectionalLight(0xC4A96B, 0.6);
-  rim.position.set(0, -2, -4);
-  scene.add(rim);
+  // Rim light atrás — define silhueta
+  const rimLight = new THREE.DirectionalLight(0xC4A96B, 1.5);
+  rimLight.position.set(0, -1, -5);
+  scene.add(rimLight);
+
+  // Extra: bounce light embaixo (simula reflexo do chão escuro)
+  const bounceLight = new THREE.PointLight(0x302010, 3, 8);
+  bounceLight.position.set(0, -2.5, 1.5);
+  scene.add(bounceLight);
 
   /* ── Cap ── */
-  const cap = buildCap();
-  scene.add(cap);
+  let cap;
+  try {
+    cap = buildCap();
+    scene.add(cap);
+  } catch (e) {
+    console.error('[ÁSPERUS] Erro ao construir boné:', e);
+    return null;
+  }
 
-  /* ── Entrance animation state ── */
-  cap.position.y = 6;
-  cap.rotation.x = -0.4;
+  /* ── Entrada: cai de cima com bounce ── */
+  cap.position.y = 8;
+  cap.rotation.x = -0.5;
 
-  /* ── Particles ── */
-  const particleGeo = new THREE.BufferGeometry();
-  const count = 2000;
+  /* ── Partículas (fundo) ── */
+  const count = 1800;
   const pos = new Float32Array(count * 3);
   const vel = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
-    pos[i*3]   = (Math.random() - 0.5) * 22;
-    pos[i*3+1] = (Math.random() - 0.5) * 22;
-    pos[i*3+2] = (Math.random() - 0.5) * 22;
-    vel[i*3]   = (Math.random() - 0.5) * 0.002;
+    pos[i*3]   = (Math.random() - 0.5) * 20;
+    pos[i*3+1] = (Math.random() - 0.5) * 20;
+    pos[i*3+2] = (Math.random() - 0.5) * 15;
+    vel[i*3]   = (Math.random() - 0.5) * 0.003;
     vel[i*3+1] = (Math.random() - 0.5) * 0.001;
     vel[i*3+2] = (Math.random() - 0.5) * 0.002;
   }
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const particleMat = new THREE.PointsMaterial({
-    color: 0xC4A96B, size: 0.02,
-    transparent: true, opacity: 0.45, sizeAttenuation: true,
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pMat = new THREE.PointsMaterial({
+    color: 0xC4A96B, size: 0.025,
+    transparent: true, opacity: 0.5, sizeAttenuation: true,
   });
-  const particles = new THREE.Points(particleGeo, particleMat);
-  scene.add(particles);
-
-  /* ── Post-processing (Bloom) ── */
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.35, 0.4, 0.9
-  );
-  composer.addPass(bloom);
+  scene.add(new THREE.Points(pGeo, pMat));
 
   /* ── Resize ── */
   function resize() {
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    renderer.setSize(w, h);
-    composer.setSize(w, h);
+    const w = container.offsetWidth  || window.innerWidth  * 0.55;
+    const h = container.offsetHeight || window.innerHeight;
+    renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
   resize();
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(container);
   window.addEventListener('resize', resize);
 
-  /* ── Mouse interaction ── */
-  let targetRotX = 0, targetRotY = 0;
-  let currentRotX = 0, currentRotY = 0;
+  /* ── Mouse ── */
+  let tRotX = 0, tRotY = 0, cRotX = 0, cRotY = 0;
   const MAX_H = THREE.MathUtils.degToRad(20);
   const MAX_V = THREE.MathUtils.degToRad(10);
 
-  function onMouseMove(e) {
+  window.addEventListener('mousemove', (e) => {
     const rect = container.getBoundingClientRect();
     const nx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
     const ny = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
-    targetRotY =  nx * MAX_H;
-    targetRotX = -ny * MAX_V;
-  }
+    tRotY =  nx * MAX_H;
+    tRotX = -ny * MAX_V;
+  });
 
-  // Touch support
-  function onTouchMove(e) {
+  window.addEventListener('touchmove', (e) => {
     const t = e.touches[0];
-    onMouseMove({ clientX: t.clientX, clientY: t.clientY });
-  }
+    const rect = container.getBoundingClientRect();
+    tRotY = ((t.clientX - rect.left) / rect.width  - 0.5) * MAX_H * 2;
+    tRotX = -((t.clientY - rect.top) / rect.height - 0.5) * MAX_V * 2;
+  }, { passive: true });
 
-  container.addEventListener('mousemove', onMouseMove);
-  container.addEventListener('touchmove', onTouchMove, { passive: true });
-
-  /* ── Logo hover pulse ── */
+  /* ── Logo hover ── */
   const raycaster = new THREE.Raycaster();
-  const pointer = new THREE.Vector2();
-  const logoMesh = cap.getObjectByName('logo');
+  const ptr = new THREE.Vector2(-99, -99);
+  const logo = cap.getObjectByName('logo');
   let logoScale = 1;
 
-  container.addEventListener('mousemove', (e) => {
+  window.addEventListener('mousemove', (e) => {
     const rect = container.getBoundingClientRect();
-    pointer.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
-    pointer.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+    ptr.x = ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+    ptr.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
   });
 
   /* ── Scroll flip ── */
-  let scrollProgress = 0;
-  let hasFlipped = false;
+  let scrollProg = 0, flipped = false;
   window.addEventListener('scroll', () => {
     const hero = document.getElementById('hero');
     if (!hero) return;
-    const rect = hero.getBoundingClientRect();
-    scrollProgress = Math.max(0, Math.min(1, -rect.top / rect.height));
+    scrollProg = Math.max(0, Math.min(1, -hero.getBoundingClientRect().top / hero.offsetHeight));
   });
 
-  /* ── Entrance bounce (GSAP fallback with THREE) ── */
-  let entranceDone = false;
-  let entranceT = 0;
-
-  /* ── Animation loop ── */
+  /* ── Loop ── */
   let frameId;
+  let entranceT = 0, entranceDone = false;
   const clock = new THREE.Clock();
+  let flipAngle = 0;
 
   function animate() {
     frameId = requestAnimationFrame(animate);
-    const delta = clock.getDelta();
+    const dt = clock.getDelta();
     const elapsed = clock.getElapsedTime();
 
-    /* Entrance drop */
+    /* Entrada bounce */
     if (!entranceDone) {
-      entranceT += delta * 1.4;
-      const t = Math.min(entranceT, 1);
-      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
-      const bounce = t > 0.7 ? Math.sin((t - 0.7) / 0.3 * Math.PI) * 0.08 * (1 - t) : 0;
-      cap.position.y = 6 * (1 - eased) - bounce;
-      if (t >= 1) { cap.position.y = 0; entranceDone = true; }
+      entranceT = Math.min(entranceT + dt * 1.3, 1);
+      const eased = 1 - Math.pow(1 - entranceT, 4);
+      const bounce = entranceT > 0.75 ? Math.sin((entranceT - 0.75) / 0.25 * Math.PI) * 0.12 * (1 - entranceT) : 0;
+      cap.position.y = 8 * (1 - eased) - bounce;
+      cap.rotation.x = -0.5 * (1 - eased) + (-0.05);
+      if (entranceT >= 1) { cap.position.y = 0; entranceDone = true; }
     }
 
-    /* Lerp rotation from mouse */
-    currentRotY += (targetRotY - currentRotY) * 0.05;
-    currentRotX += (targetRotX - currentRotX) * 0.05;
+    /* Rotação por mouse */
+    cRotX += (tRotX - cRotX) * 0.05;
+    cRotY += (tRotY - cRotY) * 0.05;
 
-    if (!hasFlipped) {
-      cap.rotation.y = currentRotY + Math.sin(elapsed * 0.3) * 0.02;
-      cap.rotation.x = -0.06 + currentRotX + Math.sin(elapsed * 0.2) * 0.01;
+    if (!flipped && entranceDone) {
+      cap.rotation.y = -0.35 + cRotY + Math.sin(elapsed * 0.25) * 0.015;
+      cap.rotation.x = -0.05 + cRotX + Math.sin(elapsed * 0.18) * 0.008;
+      cap.rotation.z = 0.03 + Math.sin(elapsed * 0.12) * 0.005;
     }
 
-    /* Scroll flip */
-    if (scrollProgress > 0.3 && !hasFlipped) {
-      hasFlipped = true;
-      // Animate 360° flip
-      const startY = cap.rotation.y;
+    /* Scroll flip 360° */
+    if (scrollProg > 0.35 && !flipped) {
+      flipped = true;
       let t = 0;
-      const flipInterval = setInterval(() => {
-        t += 0.03;
-        cap.rotation.y = startY + t * Math.PI * 2;
-        cap.position.y -= 0.08;
-        cap.material && (cap.material.opacity = 1 - t / 1.2);
-        if (t >= 1.2) {
-          clearInterval(flipInterval);
-          cap.visible = false;
-        }
+      const iv = setInterval(() => {
+        t += 0.025;
+        cap.rotation.y += 0.18;
+        cap.position.y -= 0.06;
+        if (t >= 1.2) { clearInterval(iv); cap.visible = false; }
       }, 16);
     }
 
-    /* Particle drift */
-    const positions = particleGeo.attributes.position.array;
+    /* Partículas drift */
+    const pa = pGeo.attributes.position.array;
     for (let i = 0; i < count; i++) {
-      positions[i*3]   += vel[i*3];
-      positions[i*3+1] += vel[i*3+1];
-      positions[i*3+2] += vel[i*3+2];
-      // Wrap around
-      if (Math.abs(positions[i*3])   > 11) vel[i*3]   *= -1;
-      if (Math.abs(positions[i*3+1]) > 11) vel[i*3+1] *= -1;
-      if (Math.abs(positions[i*3+2]) > 11) vel[i*3+2] *= -1;
+      pa[i*3]   += vel[i*3];
+      pa[i*3+1] += vel[i*3+1];
+      pa[i*3+2] += vel[i*3+2];
+      if (Math.abs(pa[i*3])   > 10) vel[i*3]   *= -1;
+      if (Math.abs(pa[i*3+1]) > 10) vel[i*3+1] *= -1;
+      if (Math.abs(pa[i*3+2]) > 7.5) vel[i*3+2] *= -1;
     }
-    particleGeo.attributes.position.needsUpdate = true;
+    pGeo.attributes.position.needsUpdate = true;
 
-    /* Logo hover check */
-    if (logoMesh) {
-      raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObject(logoMesh);
-      const targetScale = hits.length > 0 ? 1.02 : 1.0;
-      logoScale += (targetScale - logoScale) * 0.1;
-      logoMesh.scale.setScalar(logoScale);
+    /* Logo hover scale */
+    if (logo) {
+      raycaster.setFromCamera(ptr, camera);
+      const hits = raycaster.intersectObject(logo);
+      logoScale += ((hits.length ? 1.03 : 1.0) - logoScale) * 0.1;
+      logo.scale.setScalar(logoScale);
     }
 
-    composer.render();
+    renderer.render(scene, camera);
   }
 
   animate();
-
-  return { destroy() { cancelAnimationFrame(frameId); renderer.dispose(); } };
+  return { destroy() { cancelAnimationFrame(frameId); ro.disconnect(); renderer.dispose(); } };
 }
 
-/* ── Loader wireframe scene ── */
+/* ── Loader ── */
 export function initLoaderScene() {
   const canvas = document.getElementById('loader-canvas');
   if (!canvas) return null;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(200, 200);
-  renderer.setPixelRatio(window.devicePixelRatio);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0.5, 4);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
+  camera.position.set(0, 0.5, 4.5);
 
-  const wireMat = new THREE.MeshBasicMaterial({
-    color: 0xC4A96B, wireframe: true, transparent: true, opacity: 0.6,
-  });
+  const mat = new THREE.MeshBasicMaterial({ color: 0xC4A96B, wireframe: true, transparent: true, opacity: 0.7 });
+  const crown = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 7, 0, Math.PI*2, 0, Math.PI*0.55), mat);
+  crown.position.y = 0.06;
+  scene.add(crown);
+  scene.add(new THREE.Mesh(new THREE.CylinderGeometry(1,1,0.12,10), mat));
 
-  // Simple wireframe cap shapes
-  const wCrown = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8, 0, Math.PI*2, 0, Math.PI*0.5), wireMat);
-  wCrown.position.y = 0.05;
-  scene.add(wCrown);
-
-  const wBase = new THREE.Mesh(new THREE.CylinderGeometry(1,1,0.1,16), wireMat);
-  scene.add(wBase);
-
-  let frameId;
-  let t = 0;
+  let scale = 0.1, growing = true, frameId;
   function loop() {
     frameId = requestAnimationFrame(loop);
-    t += 0.015;
-    wCrown.rotation.y = t;
-    wBase.rotation.y = t;
-    wCrown.scale.setScalar(0.3 + t * 0.3 > 1 ? 1 : 0.3 + t * 0.3);
+    if (growing) { scale += 0.015; if (scale >= 1) { scale = 1; growing = false; } }
+    crown.scale.setScalar(scale);
+    crown.rotation.y += 0.03;
     renderer.render(scene, camera);
   }
   loop();
   return { destroy() { cancelAnimationFrame(frameId); renderer.dispose(); } };
 }
 
-/* ── Footer easter egg scene ── */
+/* ── Footer easter egg ── */
 export function initFooterCapScene() {
   const canvas = document.getElementById('footer-cap-canvas');
   if (!canvas) return null;
@@ -271,27 +248,28 @@ export function initFooterCapScene() {
   renderer.setSize(150, 150);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0.5, 4.5);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
+  camera.position.set(0, 0.5, 5);
 
-  const cap = buildCap();
-  cap.scale.setScalar(0.7);
+  let cap;
+  try { cap = buildCap(); } catch(e) { return null; }
+  cap.scale.setScalar(0.65);
   scene.add(cap);
 
-  const light = new THREE.DirectionalLight(0xC4A96B, 3);
-  light.position.set(2, 3, 2);
-  scene.add(light);
-  scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  const l = new THREE.DirectionalLight(0xC4A96B, 4);
+  l.position.set(2, 4, 3);
+  scene.add(l);
 
-  let frameId, spin = false;
+  let frameId, spinning = false;
   function loop() {
     frameId = requestAnimationFrame(loop);
-    if (spin) cap.rotation.y += 0.04;
+    if (spinning) cap.rotation.y += 0.05;
     renderer.render(scene, camera);
   }
   loop();
   return {
-    startSpin() { spin = true; setTimeout(() => { spin = false; }, 2000); },
+    startSpin() { spinning = true; setTimeout(() => { spinning = false; }, 2200); },
     destroy() { cancelAnimationFrame(frameId); renderer.dispose(); }
   };
 }
