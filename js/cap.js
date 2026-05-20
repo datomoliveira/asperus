@@ -1,222 +1,366 @@
-// cap.js — Boné 3D construído do zero com geometrias primitivas Three.js
+// cap.js — Boné 3D reconstruído com base na foto de referência
+// Ref: 6-panel fitted cap, malha wool/knit, copa alta, aba curva pra baixo
 import * as THREE from 'three';
 
-/* ─── Noise texture procedural (simula tecido) ─── */
-function makeNoiseTexture(size = 256) {
+/* ─── Textura de malha knit (waffle) — muito áspera, como na foto ─── */
+function makeKnitTexture(size = 512) {
   const canvas = document.createElement('canvas');
   canvas.width = size; canvas.height = size;
   const ctx = canvas.getContext('2d');
 
-  // Layered fabric-like noise using canvas operations
+  // Base escura
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, size, size);
+
   const img = ctx.createImageData(size, size);
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const i = (y * size + x) * 4;
       const fx = x / size;
       const fy = y / size;
-      // Woven fabric: horizontal + vertical threads
-      const h = Math.sin(fx * 80) * 0.25 + 0.5;
-      const v = Math.sin(fy * 80) * 0.25 + 0.5;
-      // Coarse weave
-      const coarse = (Math.sin(fx * 18) * Math.sin(fy * 18)) * 0.15;
-      let val = (h + v) * 0.5 + coarse;
-      // Clamp to 0-1
+
+      // Waffle knit: diagonais cruzadas finas
+      const d1 = Math.sin((fx + fy) * 120) * 0.5 + 0.5;
+      const d2 = Math.sin((fx - fy) * 120) * 0.5 + 0.5;
+      // Vertical ribs (como na foto)
+      const rib = Math.sin(fx * 80) * 0.3 + 0.7;
+      // Horizontal cross threads
+      const cross = Math.sin(fy * 80) * 0.15 + 0.85;
+
+      let val = (d1 * 0.25 + d2 * 0.25 + rib * 0.35 + cross * 0.15);
+      val = Math.pow(val, 1.5); // increase contrast
       val = Math.max(0, Math.min(1, val));
-      const b = Math.floor(val * 255);
+
+      const b = Math.floor(val * 200); // cap at 200 to stay dark
       img.data[i] = b; img.data[i+1] = b; img.data[i+2] = b; img.data[i+3] = 255;
     }
   }
   ctx.putImageData(img, 0, 0);
 
-  // Blur for softness
+  // Slight blur
   const off = document.createElement('canvas');
   off.width = size; off.height = size;
   const octx = off.getContext('2d');
-  octx.filter = 'blur(0.8px)';
+  octx.filter = 'blur(0.4px)';
   octx.drawImage(canvas, 0, 0);
 
   const tex = new THREE.CanvasTexture(off);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(4, 4);
+  tex.repeat.set(6, 6);
   return tex;
 }
 
-/* ─── Logo texture em canvas ─── */
+/* ─── Normal map para malha grossa ─── */
+function makeKnitNormalMap(size = 256) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(size, size);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4;
+      const fx = x / size;
+      const fy = y / size;
+      // Cross-hatch normals
+      const nx = Math.sin(fx * 80) * 0.5 + 0.5;
+      const ny = Math.sin(fy * 80) * 0.5 + 0.5;
+      img.data[i]   = Math.floor(nx * 255);
+      img.data[i+1] = Math.floor(ny * 255);
+      img.data[i+2] = 200; // Z (pointing outward mostly)
+      img.data[i+3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(6, 6);
+  return tex;
+}
+
+/* ─── Logo ÁSPERUS ─── */
 function makeLogoTexture(label = 'ÁSPERUS') {
   const size = 512;
   const c = document.createElement('canvas');
   c.width = size; c.height = size;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = 'rgba(0,0,0,0)';
-  ctx.fillRect(0, 0, size, size);
+  ctx.clearRect(0, 0, size, size);
 
-  // Emboss-like gold text
-  ctx.font = 'bold 72px "Clash Display", sans-serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = 'bold 68px "Clash Display", "Cabinet Grotesk", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
-  // Shadow (depth)
-  ctx.fillStyle = 'rgba(0,0,0,0.8)';
-  ctx.fillText(label, size/2 + 2, size/2 + 2);
+  // Depth shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.9)';
+  ctx.fillText(label, size/2 + 2, size/2 + 3);
 
-  // Main text
-  const grad = ctx.createLinearGradient(0, size/2 - 36, 0, size/2 + 36);
-  grad.addColorStop(0, '#E8E2D9');
-  grad.addColorStop(0.5, '#C4A96B');
-  grad.addColorStop(1, '#8a7040');
-  ctx.fillStyle = grad;
+  // Gold gradient text
+  const g = ctx.createLinearGradient(0, size/2 - 40, 0, size/2 + 40);
+  g.addColorStop(0, '#F0E8D0');
+  g.addColorStop(0.4, '#C4A96B');
+  g.addColorStop(1, '#7a6030');
+  ctx.fillStyle = g;
   ctx.fillText(label, size/2, size/2);
 
   const tex = new THREE.CanvasTexture(c);
   return tex;
 }
 
-/* ─── Brim geometry personalizada ─── */
+/* ─── Brim geometry: longa, curva para baixo, borda enrolada ─── */
+// Baseado na foto: aba media-longa, curva pra baixo no centro, bordas laterais mais altas
 function makeBrimGeometry() {
-  const innerR = 1.02, outerR = 1.95;
-  const segs = 64;
-  const halfAngle = Math.PI * 0.37; // ~67° = 134° total
+  const innerR = 1.02;
+  const outerR = 2.1;   // aba mais longa que o anterior
+  const segs = 80;
+  const halfAngle = Math.PI * 0.38; // ~68° cada lado = 136° total
 
-  const verts = [], normals = [], uvs = [], indices = [];
+  const verts = [];
+  const indices = [];
 
   for (let i = 0; i <= segs; i++) {
     const t = i / segs;
     const angle = -halfAngle + t * halfAngle * 2;
-    const ca = Math.cos(angle), sa = Math.sin(angle);
+    const ca = Math.cos(angle);
+    const sa = Math.sin(angle);
 
-    // Inner ring (attached to crown base)
-    const xi = sa * innerR, zi = ca * innerR;
-    // Outer tip — droops slightly at front center
-    const xo = sa * outerR, zo = ca * outerR;
-    const droop = -0.12 * Math.cos(angle * 1.4);
+    // Inner ring
+    const xi = sa * innerR;
+    const zi = ca * innerR;
+    const yi = -0.05;
 
-    verts.push(xi, -0.04, zi);   // inner vertex
-    verts.push(xo, droop - 0.06, zo); // outer vertex
+    // Outer edge — curva para baixo no centro (frente), sobe nas laterais
+    // Na foto: a aba dropa bastante na frente e tem borda enrolada suavemente
+    const outerBend = ca * ca; // maior perto do centro frontal
+    const xo = sa * outerR;
+    const zo = ca * outerR;
+    // Droop: até -0.35 no centro frontal, sobe nas laterais
+    const yo = -0.12 - outerBend * 0.28;
 
-    uvs.push(t, 0, t, 1);
-    normals.push(0, 1, 0, 0, 1, 0);
+    verts.push(xi, yi, zi); // inner top
+    verts.push(xo, yo, zo); // outer top
+
+    // Edge curl: adiciona um loop extra na borda com curl para cima (como na foto)
+    // A borda da aba enrola levemente pra cima no final
+    const curlRadius = 0.035;
+    const curlAngleOffset = 0.3; // curl upward
+    const xcurl = xo + sa * curlRadius * Math.sin(curlAngleOffset) * 0.3;
+    const zcurl = zo + ca * curlRadius * Math.sin(curlAngleOffset) * 0.3;
+    const ycurl = yo + curlRadius * (1 - Math.cos(curlAngleOffset));
+    verts.push(xcurl, ycurl, zcurl); // outer curl edge
   }
 
+  // Indices: quad strip com inner→outer→curl
+  // 3 verts per row segment: inner(0), outer(1), curl(2)
   for (let i = 0; i < segs; i++) {
-    const a = i * 2, b = i * 2 + 1, c = i * 2 + 2, d = i * 2 + 3;
-    indices.push(a, c, b); indices.push(b, c, d);
-    // Bottom face
-    indices.push(b, c, a); indices.push(d, c, b);
+    const a = i * 3, b = i * 3 + 1, c = i * 3 + 2;
+    const d = i * 3 + 3, e = i * 3 + 4, f = i * 3 + 5;
+
+    // Inner to outer face (top)
+    indices.push(a, d, b); indices.push(b, d, e);
+    // Outer to curl
+    indices.push(b, e, c); indices.push(c, e, f);
+    // Bottom faces (double-sided trick)
+    indices.push(b, a, d); // undo winding for bottom
+    indices.push(e, b, d);
   }
 
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-  geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
   geo.setIndex(indices);
   geo.computeVertexNormals();
   return geo;
 }
 
-/* ─── Seam (costura) TubeGeometry ─── */
-function makeSeamGeometry() {
+/* ─── 6 costuras radiais (painéis) da base ao botão ─── */
+function makePanel6Seams() {
+  const group = new THREE.Group();
+  const seamMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a, roughness: 0.98, metalness: 0.0,
+  });
+
+  for (let p = 0; p < 6; p++) {
+    const angle = (p / 6) * Math.PI * 2;
+
+    // Path: da base (raio ~1, y=0) ao botão no topo (y~1.0, raio~0)
+    const pts = [];
+    const steps = 20;
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps;
+      // Interpolate on sphere surface
+      const phi = t * Math.PI * 0.52; // from equator to near-top
+      const r = Math.sin(phi) * 0.0 + Math.cos(phi) * 0; // on unit sphere
+      // Point on hemisphere surface
+      const x = Math.cos(angle) * Math.sin(phi);
+      const y = Math.cos(phi) + 0.08; // offset slightly
+      const z = Math.sin(angle) * Math.sin(phi);
+      // Push slightly outward (1.01 * unit sphere)
+      const len = Math.sqrt(x*x + y*y + z*z);
+      pts.push(new THREE.Vector3(
+        x / len * 1.015,
+        y / len * 1.015,
+        z / len * 1.015
+      ));
+    }
+
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const tube = new THREE.TubeGeometry(curve, 30, 0.007, 5, false);
+    group.add(new THREE.Mesh(tube, seamMat));
+  }
+  return group;
+}
+
+/* ─── Costura frontal central (seam no painel da frente) ─── */
+function makeFrontSeam() {
   const pts = [];
-  const n = 30;
-  for (let i = 0; i <= n; i++) {
-    const t = i / n;
-    const angle = Math.PI * 0.15 - t * Math.PI * 0.3;
-    const r = 1.01;
+  const steps = 24;
+  for (let s = 0; s <= steps; s++) {
+    const t = s / steps;
+    const phi = t * Math.PI * 0.5;
+    const x = 0; // centro frontal (ângulo 0)
+    const y = Math.cos(phi) + 0.08;
+    const z = Math.sin(phi);
+    const len = Math.sqrt(x*x + y*y + z*z);
     pts.push(new THREE.Vector3(
-      Math.sin(angle) * r,
-      Math.cos(angle * 0.6) * 0.18 + 0.35,
-      Math.cos(angle) * r
+      x / len * 1.016,
+      y / len * 1.016,
+      z / len * 1.016
     ));
   }
   const curve = new THREE.CatmullRomCurve3(pts);
-  return new THREE.TubeGeometry(curve, 40, 0.008, 6, false);
+  const geo = new THREE.TubeGeometry(curve, 36, 0.008, 5, false);
+  return geo;
 }
 
-/* ─── BUILD CAP ─── */
+/* ═══════════════════════════════════════════════
+   BUILD CAP — referência foto: 6-panel fitted black wool cap
+═══════════════════════════════════════════════ */
 export function buildCap() {
   const cap = new THREE.Group();
 
-  const noiseTex = makeNoiseTexture(256);
-  const logoTex = makeLogoTexture();
+  const knitTex   = makeKnitTexture(512);
+  const normalTex = makeKnitNormalMap(256);
+  const logoTex   = makeLogoTexture();
 
-  // ── Main fabric material ──
+  /* ── Material principal: tecido wool/knit preto matte ── */
   const fabric = new THREE.MeshStandardMaterial({
-    color: 0x0c0c0c,
-    roughness: 0.88,
-    metalness: 0.04,
-    displacementMap: noiseTex,
-    displacementScale: 0.018,
-    normalMap: noiseTex,
-    normalScale: new THREE.Vector2(0.4, 0.4),
+    color: 0x0d0d0d,
+    roughness: 0.95,    // extremamente áspero — sem brilho, como na foto
+    metalness: 0.0,
+    map: knitTex,
+    displacementMap: knitTex,
+    displacementScale: 0.022,
+    normalMap: normalTex,
+    normalScale: new THREE.Vector2(0.6, 0.6),
   });
 
-  // ── CROWN (copa) — half sphere ──
-  const crownGeo = new THREE.SphereGeometry(1, 64, 48, 0, Math.PI * 2, 0, Math.PI * 0.52);
+  /* ── COPA (Crown) — alta e arredondada, como 6-panel fitted ── */
+  // Na foto: copa bem alta, dome pronunciado, base reta
+  // Usamos SphereGeometry com phiLength > PI/2 para copa mais alta
+  const crownGeo = new THREE.SphereGeometry(
+    1,      // radius
+    64,     // widthSegs
+    48,     // heightSegs
+    0,      // phiStart
+    Math.PI * 2,  // phiLength (full circle)
+    0,      // thetaStart (top)
+    Math.PI * 0.58 // thetaLength — copa alta (> meio-esfera)
+  );
   const crown = new THREE.Mesh(crownGeo, fabric);
-  crown.position.y = 0.08;
+  crown.position.y = 0.06;
   cap.add(crown);
 
-  // ── CROWN BASE — thin cylinder ──
-  const baseGeo = new THREE.CylinderGeometry(1, 1, 0.1, 64);
-  const base = new THREE.Mesh(baseGeo, fabric);
-  base.position.y = 0;
-  cap.add(base);
+  /* ── BASE BAND — faixa estrutural na base da copa ── */
+  // Na foto: banda leve onde a copa encontra o aro
+  const bandGeo = new THREE.CylinderGeometry(1.01, 1.0, 0.18, 64);
+  const bandMat = new THREE.MeshStandardMaterial({
+    color: 0x0a0a0a, roughness: 0.97, metalness: 0.0,
+    map: knitTex,
+  });
+  const band = new THREE.Mesh(bandGeo, bandMat);
+  band.position.y = -0.04;
+  cap.add(band);
 
-  // ── BRIM (aba) ──
-  const brimGeo = makeBrimGeometry();
-  const brim = new THREE.Mesh(brimGeo, fabric);
+  /* ── 6 PANEL SEAMS (costuras radiais) ── */
+  const seams = makePanel6Seams();
+  cap.add(seams);
+
+  /* ── FRONT SEAM (costura do painel frontal) ── */
+  const frontSeamMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a, roughness: 0.98,
+  });
+  const frontSeam = new THREE.Mesh(makeFrontSeam(), frontSeamMat);
+  cap.add(frontSeam);
+
+  /* ── ABA (Brim) ── */
+  const brim = new THREE.Mesh(makeBrimGeometry(), fabric);
   cap.add(brim);
 
-  // ── SWEATBAND (suador) — thin torus ──
-  const sweatGeo = new THREE.TorusGeometry(0.97, 0.035, 10, 64, Math.PI * 2);
+  /* ── BRIM EDGE STITCH — filete de costura na borda da aba ── */
+  // Na foto: linha fina de costura ao longo da borda
+  const halfA = Math.PI * 0.38;
+  const edgePts = [];
+  for (let i = 0; i <= 60; i++) {
+    const t = i / 60;
+    const angle = -halfA + t * halfA * 2;
+    const outerR = 2.1;
+    const ca = Math.cos(angle), sa = Math.sin(angle);
+    const outerBend = ca * ca;
+    edgePts.push(new THREE.Vector3(
+      sa * outerR,
+      -0.12 - outerBend * 0.28 + 0.02,
+      ca * outerR
+    ));
+  }
+  const edgeCurve = new THREE.CatmullRomCurve3(edgePts);
+  const edgeGeo = new THREE.TubeGeometry(edgeCurve, 80, 0.009, 5, false);
+  const edgeMat = new THREE.MeshStandardMaterial({ color: 0x1c1c1c, roughness: 0.95 });
+  cap.add(new THREE.Mesh(edgeGeo, edgeMat));
+
+  /* ── SWEATBAND (suador) — visível na base interna ── */
+  const sweatGeo = new THREE.TorusGeometry(0.96, 0.04, 12, 64, Math.PI * 2);
   const sweatMat = new THREE.MeshStandardMaterial({
-    color: 0x1a1208, roughness: 0.75, metalness: 0.08,
+    color: 0x111108, roughness: 0.8, metalness: 0.05,
   });
   const sweat = new THREE.Mesh(sweatGeo, sweatMat);
   sweat.rotation.x = Math.PI / 2;
-  sweat.position.y = -0.03;
+  sweat.position.y = -0.1;
   cap.add(sweat);
 
-  // ── TOP BUTTON ──
-  const btnGeo = new THREE.CylinderGeometry(0.075, 0.075, 0.1, 10);
+  /* ── TOP BUTTON (botão no topo) ── */
+  // Na foto: pequeno botão circular no ápice, de tecido
+  const btnGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.06, 8);
+  const btnDiscGeo = new THREE.CylinderGeometry(0.11, 0.11, 0.02, 8);
   const btnMat = new THREE.MeshStandardMaterial({
-    color: 0x222222, roughness: 0.6, metalness: 0.2,
+    color: 0x111111, roughness: 0.95, map: knitTex
   });
   const btn = new THREE.Mesh(btnGeo, btnMat);
-  btn.position.y = 1.02;
+  btn.position.y = 0.58 + 0.06; // top of high crown
   cap.add(btn);
-
-  // ── TOP BUTTON DISC ──
-  const btnDiscGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.015, 10);
   const btnDisc = new THREE.Mesh(btnDiscGeo, btnMat);
-  btnDisc.position.y = 1.07;
+  btnDisc.position.y = 0.58 + 0.09;
   cap.add(btnDisc);
 
-  // ── SEAM (costura frontal) ──
-  const seamGeo = makeSeamGeometry();
-  const seamMat = new THREE.MeshStandardMaterial({
-    color: 0x2a2a2a, roughness: 0.95, metalness: 0.0,
-  });
-  const seam = new THREE.Mesh(seamGeo, seamMat);
-  cap.add(seam);
-
-  // ── LOGO PANEL (bordado frontal) ──
-  const logoGeo = new THREE.PlaneGeometry(0.85, 0.22);
+  /* ── LOGO ÁSPERUS bordado frontal ── */
+  const logoGeo = new THREE.PlaneGeometry(0.8, 0.2);
   const logoMat = new THREE.MeshStandardMaterial({
     map: logoTex,
     transparent: true,
-    roughness: 0.7,
-    metalness: 0.15,
+    roughness: 0.75,
+    metalness: 0.1,
     alphaTest: 0.05,
   });
   const logo = new THREE.Mesh(logoGeo, logoMat);
-  // Position on front face of crown
-  logo.position.set(0, 0.38, 0.97);
-  logo.rotation.x = -0.18;
+  // Posição na face frontal da copa — levemente inclinada
+  logo.position.set(0, 0.28, 1.0);
+  logo.rotation.x = -0.22;
   logo.name = 'logo';
   cap.add(logo);
 
-  // Slight overall tilt (cap worn at angle)
-  cap.rotation.x = -0.06;
-  cap.rotation.z = 0.04;
+  /* ── Orientação final — foto é 3/4 angle ── */
+  // No site: mostramos ligeiramente rotacionado para mostrar a estrutura
+  cap.rotation.y = -0.35;  // slight 3/4 view inicial
+  cap.rotation.x = -0.05;
+  cap.rotation.z = 0.03;
 
   return cap;
 }
