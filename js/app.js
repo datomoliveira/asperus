@@ -1,5 +1,5 @@
 // app.js — Main orchestrator: cursor, GSAP, scroll, forms, init
-import { initHeroScene, initLoaderScene, initFooterCapScene } from './hero.js';
+import { initHeroScene, initLoaderScene, initFooterCapScene } from './hero.js?v=1.0.1';
 import { initServiceScenes, initAvatarScene, initContactScene } from './sections.js';
 
 /* ══════════════════════════════════════════════
