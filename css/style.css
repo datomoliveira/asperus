@@ -21,7 +21,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
-  background: var(--bg);
+  background: linear-gradient(rgba(8, 8, 8, 0.85), rgba(8, 8, 8, 0.85)), url('../dark-marble.png');
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center;
   color: var(--cream);
   font-family: var(--font-body);
   overflow-x: hidden;
@@ -298,11 +302,12 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 
 /* ===== GLASS CARD ===== */
 .glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 12px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
 
 /* ===== ABOUT ===== */
