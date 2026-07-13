@@ -7,6 +7,17 @@ export function initHeroScene() {
   const placeholder = document.getElementById('hero-placeholder');
   if (!video || !placeholder) return null;
 
+  let playCount = 0;
+  const maxPlays = 3;
+
+  function onVideoEnded() {
+    playCount++;
+    if (playCount < maxPlays) {
+      video.currentTime = 0;
+      video.play().catch(err => console.warn("Video replay failed:", err));
+    }
+  }
+
   function onVideoReady() {
     video.play().then(() => {
       video.classList.add('active');
@@ -17,6 +28,8 @@ export function initHeroScene() {
       placeholder.classList.remove('active');
     });
   }
+
+  video.addEventListener('ended', onVideoEnded);
 
   if (video.readyState >= 3) {
     onVideoReady();
@@ -29,6 +42,7 @@ export function initHeroScene() {
     destroy() {
       video.removeEventListener('canplay', onVideoReady);
       video.removeEventListener('loadeddata', onVideoReady);
+      video.removeEventListener('ended', onVideoEnded);
       video.pause();
     }
   };

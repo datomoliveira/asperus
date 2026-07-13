@@ -121,6 +121,7 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   letter-spacing: 0.2em;
   color: var(--cream);
   transition: color 0.3s;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 .nav-logo:hover { color: var(--gold); }
 .nav-links { display: flex; align-items: center; gap: 2.5rem; }
@@ -128,9 +129,10 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   font-size: 0.85rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(232,226,217,0.6);
+  color: rgba(232,226,217,0.7);
   transition: color 0.3s;
   position: relative;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 .nav-link::after {
   content: '';
@@ -146,9 +148,10 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   border: 1px solid var(--glass-border-gold);
   border-radius: 4px;
   color: var(--gold) !important;
-  background: var(--glass-bg);
+  background: rgba(8, 8, 8, 0.45);
   backdrop-filter: blur(10px);
   transition: background 0.3s, border-color 0.3s, color 0.3s !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 .nav-cta:hover { background: var(--gold-dim); border-color: var(--gold); }
 .nav-cta::after { display: none; }
@@ -181,8 +184,7 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 .hero {
   position: relative;
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  display: flex;
   align-items: center;
   overflow: hidden;
 }
@@ -190,6 +192,8 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   padding: 8rem 0 8rem 3rem;
   display: flex; flex-direction: column; gap: 1.5rem;
   z-index: 2; position: relative;
+  max-width: 650px;
+  width: 100%;
 }
 .hero-eyebrow {
   display: flex; align-items: center; gap: 1rem;
@@ -208,6 +212,7 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   overflow: hidden;
   white-space: nowrap;
   width: max-content;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
 }
 .hero-title .char {
   display: inline-block;
@@ -221,8 +226,9 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   font-family: var(--font-head);
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   line-height: 1.4;
-  color: rgba(232,226,217,0.5);
+  color: rgba(232,226,217,0.7);
   letter-spacing: 0.05em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 .hero-sub .word {
   display: inline-block;
@@ -236,7 +242,7 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 .btn-glass {
   display: inline-flex; align-items: center; gap: 0.75rem;
   padding: 0.9rem 1.75rem;
-  background: var(--glass-bg);
+  background: rgba(8, 8, 8, 0.5);
   border: 1px solid var(--glass-border-gold);
   backdrop-filter: blur(12px);
   border-radius: 6px;
@@ -248,9 +254,10 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   align-self: flex-start;
   opacity: 0;
   animation: fadeUp 0.8s var(--ease-out) 1.5s forwards;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 .btn-glass:hover {
-  background: rgba(196,169,107,0.12);
+  background: rgba(196, 169, 107, 0.2);
   border-color: var(--gold);
   transform: translateY(-3px);
 }
@@ -263,9 +270,27 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 }
 
 .hero-right {
-  position: relative; height: 100vh;
-  display: flex; align-items: center; justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  pointer-events: none;
+}
+.hero-right::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(to bottom, rgba(8, 8, 8, 0.7) 0%, transparent 25%),
+    linear-gradient(to right, rgba(8, 8, 8, 0.95) 0%, rgba(8, 8, 8, 0.75) 40%, rgba(8, 8, 8, 0.3) 70%, rgba(8, 8, 8, 0.1) 100%);
+  z-index: 2;
+  pointer-events: none;
 }
 .hero-media {
   position: absolute;
@@ -602,9 +627,17 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   .services-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; }
-  .hero-left { padding: 7rem 2rem 2rem; }
-  .hero-right { height: 50vh; }
+  .hero { display: flex; align-items: center; }
+  .hero-left { padding: 7rem 2rem; max-width: 100%; }
+  .hero-right { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .hero-right::after {
+    background: linear-gradient(
+      to bottom,
+      rgba(8, 8, 8, 0.85) 0%,
+      rgba(8, 8, 8, 0.6) 45%,
+      rgba(8, 8, 8, 0.85) 100%
+    ) !important;
+  }
   .about-grid { grid-template-columns: 1fr; gap: 3rem; }
   .projects-grid { grid-template-columns: 1fr 1fr; }
   .project-card--wide { grid-column: span 2; }
@@ -613,9 +646,9 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   .nav { padding: 1.25rem 1.5rem; }
   .nav-links { display: none; }
   .nav-burger { display: flex; }
-  .hero { grid-template-columns: 1fr; }
-  .hero-left { padding: 6rem 1.5rem 2rem; }
-  .hero-right { height: 45vh; }
+  .hero { display: flex; align-items: center; }
+  .hero-left { padding: 6rem 1.5rem; }
+  .hero-right { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
   .about, .services, .projects, .contact { padding: 5rem 1.5rem; }
   .services-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
