@@ -1,6 +1,6 @@
-// app.js — Main orchestrator: cursor, GSAP, scroll, forms, init
 import { initHeroScene, initLoaderScene, initFooterCapScene } from './hero.js?v=1.0.1';
 import { initServiceScenes, initAvatarScene, initContactScene } from './sections.js';
+import { initScrollAtmosphere } from './scrub-engine.js';
 
 /* ══════════════════════════════════════════════
    CUSTOM CURSOR
@@ -358,6 +358,9 @@ initNav();
 initSmoothScroll();
 
 initLoader(() => {
+  // Init scroll atmosphere and scrubbing engine
+  initScrollAtmosphere();
+
   // Init all Three.js scenes
   initHeroScene();
   initAvatarScene();

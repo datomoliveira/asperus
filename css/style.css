@@ -417,7 +417,8 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 .service-card {
   padding: 2rem 1.5rem;
   display: flex; flex-direction: column; gap: 1rem;
-  transition: transform 0.4s var(--ease-out), box-shadow 0.4s, border-color 0.4s;
+  transition: box-shadow 0.4s, border-color 0.4s, opacity 0.3s ease;
+  will-change: transform;
   cursor: none;
 }
 .service-card:hover {
@@ -452,6 +453,8 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 .project-card {
   position: relative; overflow: hidden;
   border-radius: 12px; cursor: none;
+  transition: opacity 0.3s ease;
+  will-change: transform;
 }
 .project-card--wide { grid-column: span 2; }
 .project-num {
