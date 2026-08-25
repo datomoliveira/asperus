@@ -378,4 +378,27 @@ initLoader(() => {
 
   // Form
   initContactForm();
+
+  // PageAgent AI Copilot
+  initPageAgentCopilot();
 });
+
+function initPageAgentCopilot() {
+  const navBtn = document.getElementById('btn-copilot-nav');
+  const fabBtn = document.getElementById('copilot-fab');
+
+  const triggerCopilot = () => {
+    // If PageAgent UI element exists in DOM, click or focus it
+    const paInput = document.querySelector('input[placeholder*="agent"], .page-agent-input, [data-page-agent]');
+    if (paInput) {
+      paInput.focus();
+    } else {
+      // Smooth scroll to contact section as fallback helper
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  navBtn?.addEventListener('click', triggerCopilot);
+  fabBtn?.addEventListener('click', triggerCopilot);
+}
+

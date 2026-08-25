@@ -41,6 +41,7 @@
       <li><a href="#about" class="nav-link">Sobre</a></li>
       <li><a href="#services" class="nav-link">Serviços</a></li>
       <li><a href="#projects" class="nav-link">Projetos</a></li>
+      <li><button id="btn-copilot-nav" class="nav-copilot-btn" aria-label="Abrir Busca Inteligente">🔍 Busca Inteligente</button></li>
       <li><a href="#contact" class="nav-link nav-cta">Contato</a></li>
     </ul>
     <button class="nav-burger" id="nav-burger" aria-label="Abrir menu" aria-expanded="false">
@@ -304,6 +305,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/SplitText.min.js"></script>
+
+  <!-- BUSCADOR INTELIGENTE / ASSISTENTE FLOATING TRIGGER -->
+  <div class="copilot-float-bar" id="copilot-float-bar">
+    <button class="copilot-fab" id="copilot-fab" title="Encontre serviços, projetos ou navegue pelo site">
+      <span class="copilot-sparkle">🔍</span>
+      <span class="copilot-text">Pergunte ao Site</span>
+    </button>
+  </div>
+
+  <!-- PAGE-AGENT BUNDLE -->
+  <script src="https://cdn.jsdelivr.net/npm/page-agent@1.12.2/dist/iife/page-agent.demo.js?autoInit=true" crossorigin="anonymous"></script>
 
   <!-- APP SCRIPTS (ES Modules) -->
   <script type="module" src="js/app.js?v=1.0.1"></script>

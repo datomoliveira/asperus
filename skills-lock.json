@@ -11,6 +11,11 @@
       "source": "oso95/scroll-world",
       "sourceType": "github",
       "skillPath": "skills/scroll-world/SKILL.md"
+    },
+    "page-agent": {
+      "source": "alibaba/page-agent",
+      "sourceType": "github",
+      "skillPath": "skills/page-agent/SKILL.md"
     }
   }
 }
