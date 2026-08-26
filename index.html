@@ -314,8 +314,31 @@
     </button>
   </div>
 
+  <!-- MODAL BUSCA INTELIGENTE (100% PT-BR) -->
+  <div class="search-modal" id="search-modal" aria-hidden="true">
+    <div class="search-modal-backdrop" id="search-modal-backdrop"></div>
+    <div class="search-modal-content glass-card">
+      <div class="search-modal-header">
+        <span class="search-title">🔍 Busca Inteligente</span>
+        <button class="search-modal-close" id="search-modal-close" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="search-input-wrap">
+        <input type="text" id="search-input" class="neuro-input" placeholder="O que deseja encontrar ou fazer no site?" autocomplete="off" />
+        <button id="search-submit" class="btn-glass">Buscar</button>
+      </div>
+      <div class="search-suggestions">
+        <span class="sugg-label">Sugestões rápidas:</span>
+        <button class="sugg-chip" data-query="Ir para os projetos">📁 Projetos</button>
+        <button class="sugg-chip" data-query="Ver os serviços prestados">⚡ Serviços</button>
+        <button class="sugg-chip" data-query="Quem é Renato Maia?">👤 Sobre o Renato</button>
+        <button class="sugg-chip" data-query="Preencher o formulário de contato">✉️ Contato</button>
+      </div>
+      <div class="search-status" id="search-status"></div>
+    </div>
+  </div>
+
   <!-- PAGE-AGENT BUNDLE -->
-  <script src="https://cdn.jsdelivr.net/npm/page-agent@1.12.2/dist/iife/page-agent.demo.js?autoInit=true" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-agent@1.12.2/dist/iife/page-agent.demo.js?autoInit=false" crossorigin="anonymous"></script>
 
   <!-- APP SCRIPTS (ES Modules) -->
   <script type="module" src="js/app.js?v=1.0.1"></script>

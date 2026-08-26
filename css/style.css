@@ -723,3 +723,59 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   50% { transform: scale(1.25); opacity: 1; }
 }
 
+/* ===== BUSCA INTELIGENTE MODAL (PT-BR) ===== */
+.search-modal {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.search-modal.open {
+  opacity: 1; pointer-events: auto;
+}
+.search-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(8, 8, 8, 0.85); backdrop-filter: blur(12px);
+}
+.search-modal-content {
+  position: relative; z-index: 2;
+  width: 90%; max-width: 580px; padding: 2rem;
+  background: rgba(13, 13, 13, 0.95);
+  border: 1px solid var(--gold); border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(196,169,107,0.3);
+}
+.search-modal-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;
+}
+.search-title {
+  font-family: var(--font-head); font-size: 1.25rem; color: var(--gold);
+}
+.search-modal-close {
+  font-size: 1.5rem; color: var(--cream); cursor: pointer; line-height: 1;
+  background: none; border: none; padding: 0.25rem;
+}
+.search-input-wrap {
+  display: flex; gap: 0.75rem; margin-bottom: 1.25rem;
+}
+.search-input-wrap input { flex: 1; }
+.search-suggestions {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+}
+.sugg-label { font-size: 0.8rem; color: rgba(232,226,217,0.6); width: 100%; margin-bottom: 0.25rem; }
+.sugg-chip {
+  padding: 0.35rem 0.75rem; border-radius: 16px; font-size: 0.8rem;
+  background: rgba(196, 169, 107, 0.1); border: 1px solid rgba(196, 169, 107, 0.3);
+  color: var(--cream); cursor: pointer; transition: all 0.2s ease;
+}
+.sugg-chip:hover {
+  background: var(--gold); color: #080808; transform: translateY(-1px);
+}
+.search-status {
+  margin-top: 1rem; font-size: 0.85rem; color: var(--gold); min-height: 1.25rem;
+}
+
+/* Ocultar popups padrão do PageAgent no centro da tela */
+#page-agent-container, .page-agent-panel, div[class*="page-agent-overlay"] {
+  display: none !important;
+}
+
+

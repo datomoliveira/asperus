@@ -386,19 +386,88 @@ initLoader(() => {
 function initPageAgentCopilot() {
   const navBtn = document.getElementById('btn-copilot-nav');
   const fabBtn = document.getElementById('copilot-fab');
+  const modal = document.getElementById('search-modal');
+  const backdrop = document.getElementById('search-modal-backdrop');
+  const closeBtn = document.getElementById('search-modal-close');
+  const searchInput = document.getElementById('search-input');
+  const submitBtn = document.getElementById('search-submit');
+  const statusDiv = document.getElementById('search-status');
+  const chips = document.querySelectorAll('.sugg-chip');
 
-  const triggerCopilot = () => {
-    // If PageAgent UI element exists in DOM, click or focus it
-    const paInput = document.querySelector('input[placeholder*="agent"], .page-agent-input, [data-page-agent]');
-    if (paInput) {
-      paInput.focus();
-    } else {
-      // Smooth scroll to contact section as fallback helper
-      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  if (!modal) return;
+
+  const openModal = () => {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.value = '';
     }
+    if (statusDiv) statusDiv.textContent = '';
   };
 
-  navBtn?.addEventListener('click', triggerCopilot);
-  fabBtn?.addEventListener('click', triggerCopilot);
+  const closeModal = () => {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  navBtn?.addEventListener('click', openModal);
+  fabBtn?.addEventListener('click', openModal);
+  backdrop?.addEventListener('click', closeModal);
+  closeBtn?.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  const runQuery = (q) => {
+    const query = (q || searchInput.value || '').trim().toLowerCase();
+    if (!query) return;
+
+    if (statusDiv) statusDiv.textContent = 'Processando busca...';
+
+    setTimeout(() => {
+      if (query.includes('projeto') || query.includes('case') || query.includes('portfolio')) {
+        document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+        if (statusDiv) statusDiv.textContent = '✓ Mostrando seção de Projetos!';
+      } else if (query.includes('serviço') || query.includes('servico') || query.includes('desenvolvimento') || query.includes('arquitetura')) {
+        document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+        if (statusDiv) statusDiv.textContent = '✓ Mostrando Serviços!';
+      } else if (query.includes('sobre') || query.includes('renato') || query.includes('maia') || query.includes('quem')) {
+        document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+        if (statusDiv) statusDiv.textContent = '✓ Apresentando Renato Maia!';
+      } else if (query.includes('contato') || query.includes('email') || query.includes('falar') || query.includes('mensagem')) {
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+        if (statusDiv) statusDiv.textContent = '✓ Direcionando para Contato!';
+      } else {
+        // Fallback: usar PageAgent se disponível ou direcionar para contato
+        if (window.PageAgent) {
+          try {
+            const agent = new window.PageAgent({ language: 'pt-BR' });
+            agent.execute(query);
+          } catch(err) {
+            console.warn("PageAgent execute error:", err);
+          }
+        }
+        if (statusDiv) statusDiv.textContent = '✓ Busca concluída!';
+      }
+
+      setTimeout(closeModal, 1200);
+    }, 400);
+  };
+
+  submitBtn?.addEventListener('click', () => runQuery());
+  searchInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') runQuery();
+  });
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const q = chip.dataset.query;
+      if (searchInput) searchInput.value = q;
+      runQuery(q);
+    });
+  });
 }
+
 
