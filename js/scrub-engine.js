@@ -149,13 +149,28 @@ export function initScrollAtmosphere() {
     document.body.appendChild(routeTrack);
   }
 
-  // Scroll Scrubbing & 3D Tilt Loop
+  // Generate Modern Vertical-Bar Silhouette Edge Divider (Matching Reference Image 2)
+  initVerticalBarDivider();
+
+  // Scroll Scrubbing, Layer Parallax & 3D Tilt Loop
   const cards = document.querySelectorAll('.service-card, .project-card, .stat-card');
+  const heroEl = document.getElementById('hero');
+  const dividerSvg = document.getElementById('layer-divider-svg');
   let ticking = false;
 
   function onScroll() {
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     const progress = Math.min(1, Math.max(0, window.scrollY / (maxScroll || 1)));
+
+    // Hero Layer Scrubbing & Parallax Scaling
+    if (heroEl) {
+      const heroProgress = Math.min(1, Math.max(0, window.scrollY / window.innerHeight));
+      const scale = 1 - heroProgress * 0.08;
+      const opacity = 1 - heroProgress * 0.65;
+      const translateY = -window.scrollY * 0.25;
+      heroEl.style.transform = `scale(${scale.toFixed(3)}) translateY(${translateY.toFixed(1)}px)`;
+      heroEl.style.opacity = opacity.toFixed(2);
+    }
 
     // Update progress bar fill
     fill.style.transform = `scaleX(${progress})`;
@@ -207,8 +222,46 @@ export function initScrollAtmosphere() {
 }
 
 /**
+ * Generates vertical-bar digital silhouette edge divider (Matching Reference Image 2)
+ */
+function initVerticalBarDivider() {
+  const svg = document.getElementById('layer-divider-svg');
+  if (!svg) return;
+
+  const totalWidth = 1440;
+  const maxHeight = 140;
+  const barWidth = 6;
+  const gap = 3;
+  const numBars = Math.floor(totalWidth / (barWidth + gap));
+
+  let pathD = `M 0 ${maxHeight} `;
+
+  for (let i = 0; i <= numBars; i++) {
+    const x = i * (barWidth + gap);
+    // Multi-frequency sine & noise wave creating modern digital silhouette landscape
+    const n1 = Math.sin(i * 0.07) * 35;
+    const n2 = Math.cos(i * 0.18) * 25;
+    const n3 = Math.sin(i * 0.03) * 45;
+    const noise = Math.abs(n1 + n2 + n3);
+    const barH = Math.max(18, Math.min(132, noise + ((i * 13) % 7) * 5));
+    const topY = maxHeight - barH;
+
+    pathD += `L ${x} ${topY.toFixed(1)} L ${(x + barWidth).toFixed(1)} ${topY.toFixed(1)} L ${(x + barWidth).toFixed(1)} ${maxHeight} `;
+  }
+
+  pathD += `L ${totalWidth} ${maxHeight} Z`;
+
+  svg.innerHTML = '';
+  const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  pathEl.setAttribute('d', pathD);
+  pathEl.setAttribute('fill', '#080808');
+  svg.appendChild(pathEl);
+}
+
+/**
  * Mount full camera-flight scroll engine for custom video scrubbing scenes
  */
 export function mountScrollWorld(container, config) {
   console.log('Scroll-World Engine Mounted in:', container, config);
 }
+

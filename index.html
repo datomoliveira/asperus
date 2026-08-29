@@ -34,6 +34,9 @@
     </div>
   </div>
 
+  <!-- GLOBAL PERSISTENT 3D CAP BACKGROUND -->
+  <canvas id="bg-cap-canvas" class="bg-cap-canvas" aria-hidden="true"></canvas>
+
   <!-- NAV -->
   <nav class="nav" id="nav" aria-label="Navegação principal">
     <a href="#hero" class="nav-logo" aria-label="Início ÁSPERUS">ÁSPERUS</a>
@@ -58,30 +61,34 @@
   </div>
 
   <!-- SECTION 1: HERO -->
-  <section class="hero" id="hero" aria-label="Apresentação ÁSPERUS">
-    <div class="hero-left">
-      <div class="hero-eyebrow">
-        <span class="hero-line"></span>
-        <span>Solo. Direto. Funciona.</span>
+  <div class="hero-wrapper" id="hero-wrapper">
+    <section class="hero" id="hero" aria-label="Apresentação ÁSPERUS">
+      <div class="hero-left">
+        <div class="hero-eyebrow">
+          <span class="hero-line"></span>
+          <span>Solo. Direto. Funciona.</span>
+        </div>
+        <h1 class="hero-title" id="hero-title">ÁSPERUS</h1>
+        <p class="hero-sub" id="hero-sub">Tecnologia.<br/>Estratégia.<br/>Resultado.</p>
+        <a href="#projects" class="btn-glass" id="hero-cta" aria-label="Ver projetos de Renato Maia">
+          Ver Projetos <span class="btn-arrow">↓</span>
+        </a>
       </div>
-      <h1 class="hero-title" id="hero-title">ÁSPERUS</h1>
-      <p class="hero-sub" id="hero-sub">Tecnologia.<br/>Estratégia.<br/>Resultado.</p>
-      <a href="#projects" class="btn-glass" id="hero-cta" aria-label="Ver projetos de Renato Maia">
-        Ver Projetos <span class="btn-arrow">↓</span>
-      </a>
-    </div>
-    <div class="hero-right" id="hero-right" aria-label="Vídeo do boné ÁSPERUS">
-      <img src="hero-cap.jpg" id="hero-placeholder" alt="Boné ÁSPERUS" class="hero-media active" />
-      <video id="hero-video" class="hero-media" src="hero asperus.mp4" autoplay muted playsinline preload="auto"></video>
-    </div>
-    <div class="hero-scroll-indicator" aria-hidden="true">
-      <div class="scroll-line"></div>
-      <span>scroll</span>
-    </div>
-  </section>
+      <div class="hero-right" id="hero-right" aria-label="Boné 3D Interativo ÁSPERUS">
+        <canvas id="hero-cap-canvas" class="hero-media active"></canvas>
+      </div>
+      <div class="hero-scroll-indicator" aria-hidden="true">
+        <div class="scroll-line"></div>
+        <span>scroll</span>
+      </div>
+    </section>
+  </div>
 
   <!-- SECTION 2: ABOUT -->
   <section class="about" id="about" aria-label="Sobre Renato Maia">
+    <div class="layer-edge-divider" id="layer-edge-divider" aria-hidden="true">
+      <svg id="layer-divider-svg" class="layer-divider-svg" viewBox="0 0 1440 140" preserveAspectRatio="none"></svg>
+    </div>
     <div class="about-grid">
       <div class="about-visual">
         <canvas id="avatar-canvas" aria-label="Avatar 3D de Renato Maia"></canvas>

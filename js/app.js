@@ -1,6 +1,7 @@
 import { initHeroScene, initLoaderScene, initFooterCapScene } from './hero.js?v=1.0.1';
 import { initServiceScenes, initAvatarScene, initContactScene } from './sections.js';
 import { initScrollAtmosphere } from './scrub-engine.js';
+import { initGlobalCap } from './global-cap.js';
 
 /* ══════════════════════════════════════════════
    CUSTOM CURSOR
@@ -360,6 +361,9 @@ initSmoothScroll();
 initLoader(() => {
   // Init scroll atmosphere and scrubbing engine
   initScrollAtmosphere();
+
+  // Init Global 3D Cap & Hero Frame Scrubber
+  initGlobalCap();
 
   // Init all Three.js scenes
   initHeroScene();
