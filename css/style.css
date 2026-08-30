@@ -825,4 +825,46 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   display: none !important;
 }
 
+/* ══════════════════════════════════════════════
+   LAYER EDGE DIVIDER & GSAP 3D PERSPECTIVE
+══════════════════════════════════════════════ */
+.about {
+  position: relative;
+  z-index: 5;
+}
+.layer-edge-divider {
+  position: absolute;
+  top: -120px;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  z-index: 12;
+  pointer-events: none;
+  overflow: hidden;
+}
+.layer-divider-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 -6px 12px rgba(196, 169, 107, 0.2));
+}
+
+.bg-cap-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.tilt-card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+
 

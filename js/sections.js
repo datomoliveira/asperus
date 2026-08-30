@@ -104,39 +104,58 @@ export function initAvatarScene() {
   neck.position.y = 2.15;
   avatar.add(neck);
 
-  // Head
+  // Head Group (for independent head/cap tilting)
+  const headGroup = new THREE.Group();
+  headGroup.position.y = 2.75;
+
   const head = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.82, 0.72, 2, 2, 2), skinMat);
-  head.position.y = 2.75;
-  avatar.add(head);
+  headGroup.add(head);
 
-  // Cap crown (boné)
-  const capCrown = new THREE.Mesh(new THREE.SphereGeometry(0.52, 8, 6, 0, Math.PI*2, 0, Math.PI*0.55), capMat);
-  capCrown.position.y = 3.12;
-  avatar.add(capCrown);
+  // Cap Crown (boné 3D detalhado)
+  const capCrown = new THREE.Mesh(new THREE.SphereGeometry(0.54, 16, 12, 0, Math.PI*2, 0, Math.PI*0.58), capMat);
+  capCrown.position.y = 0.36;
+  headGroup.add(capCrown);
 
-  // Cap brim
-  const brimGeo = new THREE.CylinderGeometry(0.68, 0.68, 0.06, 12, 1, false, -Math.PI*0.35, Math.PI*0.7);
+  // Cap Brim (aba do boné curvada)
+  const brimGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.05, 16, 1, false, -Math.PI*0.4, Math.PI*0.8);
   const capBrim = new THREE.Mesh(brimGeo, capMat);
-  capBrim.position.set(0, 2.75, 0.35);
-  avatar.add(capBrim);
+  capBrim.position.set(0, 0.02, 0.36);
+  capBrim.rotation.x = 0.12;
+  headGroup.add(capBrim);
+
+  // Cap Top Button (botão metálico superior do boné)
+  const capButton = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.04, 12), accentMat);
+  capButton.position.y = 0.88;
+  headGroup.add(capButton);
+
+  // Cap Front Emblem (Emblema Dourado ÁSPERUS na frente do boné)
+  const emblemGeo = new THREE.BoxGeometry(0.24, 0.15, 0.04);
+  const emblem = new THREE.Mesh(emblemGeo, accentMat);
+  emblem.position.set(0, 0.38, 0.51);
+  headGroup.add(emblem);
 
   // Eyes
   const eyeGeo = new THREE.SphereGeometry(0.06, 6, 4);
   const eyeMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
   [-0.2, 0.2].forEach(x => {
     const eye = new THREE.Mesh(eyeGeo, eyeMat);
-    eye.position.set(x, 2.76, 0.36);
-    avatar.add(eye);
+    eye.position.set(x, 0.02, 0.36);
+    headGroup.add(eye);
   });
+
+  avatar.add(headGroup);
 
   // Arms
   const armGeo = new THREE.BoxGeometry(0.32, 1.2, 0.32, 1, 3, 1);
-  [-0.8, 0.8].forEach(x => {
-    const arm = new THREE.Mesh(armGeo, bodyMat);
-    arm.position.set(x, 1.4, 0);
-    arm.rotation.z = x > 0 ? -0.15 : 0.15;
-    avatar.add(arm);
-  });
+  const leftArm = new THREE.Mesh(armGeo, bodyMat);
+  leftArm.position.set(-0.8, 1.4, 0);
+  leftArm.rotation.z = 0.15;
+  avatar.add(leftArm);
+
+  const rightArm = new THREE.Mesh(armGeo, bodyMat);
+  rightArm.position.set(0.8, 1.4, 0);
+  rightArm.rotation.z = -0.15;
+  avatar.add(rightArm);
 
   // Legs
   const legGeo = new THREE.BoxGeometry(0.4, 1.3, 0.4, 1, 3, 1);
@@ -163,23 +182,64 @@ export function initAvatarScene() {
   scene.add(avatar);
 
   // Lights
-  scene.add(new THREE.AmbientLight(0xE8E2D9, 0.5));
-  const key = new THREE.DirectionalLight(0xffd9a0, 3);
+  scene.add(new THREE.AmbientLight(0xE8E2D9, 0.6));
+  const key = new THREE.DirectionalLight(0xC4A96B, 3);
   key.position.set(4, 8, 5);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0x8090c0, 0.8);
+  const fill = new THREE.DirectionalLight(0x8090c0, 1.2);
   fill.position.set(-4, 2, 3);
   scene.add(fill);
+
+  // Motion Design Mouse Interactivity
+  let targetMouseX = 0, targetMouseY = 0;
+  let currentMouseX = 0, currentMouseY = 0;
+
+  function onMouseMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+      targetMouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      targetMouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    } else {
+      targetMouseX = 0;
+      targetMouseY = 0;
+    }
+  }
+  window.addEventListener('mousemove', onMouseMove);
 
   let frameId, t = 0;
   function animate() {
     frameId = requestAnimationFrame(animate);
-    t += 0.005;
-    avatar.rotation.y = Math.sin(t * 0.4) * 0.2;
+    t += 0.02;
+
+    // Smooth motion design interpolation
+    currentMouseX += (targetMouseX - currentMouseX) * 0.08;
+    currentMouseY += (targetMouseY - currentMouseY) * 0.08;
+
+    // Breathing motion float
+    avatar.position.y = Math.sin(t * 1.2) * 0.08;
+
+    // Avatar body rotation + mouse reactivity
+    avatar.rotation.y = Math.sin(t * 0.4) * 0.15 + currentMouseX * 0.45;
+    avatar.rotation.x = currentMouseY * 0.2;
+
+    // Head / Cap tilt anticipation & follow-through
+    headGroup.rotation.y = currentMouseX * 0.3;
+    headGroup.rotation.x = -currentMouseY * 0.2 + Math.sin(t * 1.5) * 0.03;
+
+    // Arm swaying
+    rightArm.rotation.z = -0.15 + Math.sin(t * 1.2) * 0.05;
+    leftArm.rotation.z = 0.15 - Math.sin(t * 1.2) * 0.05;
+
     renderer.render(scene, camera);
   }
   animate();
-  return { destroy() { cancelAnimationFrame(frameId); renderer.dispose(); } };
+  return {
+    destroy() {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('mousemove', onMouseMove);
+      renderer.dispose();
+    }
+  };
 }
 
 /* ── Contact wireframe logo scene ── */

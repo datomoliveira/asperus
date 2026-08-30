@@ -21,6 +21,16 @@
       "source": "img2threejs/img2threejs",
       "sourceType": "github",
       "skillPath": "SKILL.md"
+    },
+    "gsap-skills": {
+      "source": "greensock/gsap-skills",
+      "sourceType": "github",
+      "skillPath": "SKILL.md"
+    },
+    "motion-design-skill": {
+      "source": "LottieFiles/motion-design-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md"
     }
   }
 }

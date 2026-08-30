@@ -252,9 +252,29 @@ function initVerticalBarDivider() {
   pathD += `L ${totalWidth} ${maxHeight} Z`;
 
   svg.innerHTML = '';
+  
+  // Defs with gold gradient highlight
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  grad.setAttribute('id', 'dividerGoldGrad');
+  grad.setAttribute('x1', '0%'); grad.setAttribute('y1', '0%');
+  grad.setAttribute('x2', '0%'); grad.setAttribute('y2', '100%');
+
+  const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', '#C4A96B'); stop1.setAttribute('stop-opacity', '0.7');
+  const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', '#080808'); stop2.setAttribute('stop-opacity', '1');
+
+  grad.appendChild(stop1); grad.appendChild(stop2);
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
   const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   pathEl.setAttribute('d', pathD);
-  pathEl.setAttribute('fill', '#080808');
+  pathEl.setAttribute('fill', 'url(#dividerGoldGrad)');
+  pathEl.setAttribute('stroke', '#C4A96B');
+  pathEl.setAttribute('stroke-width', '0.5');
+  pathEl.setAttribute('stroke-opacity', '0.4');
   svg.appendChild(pathEl);
 }
 

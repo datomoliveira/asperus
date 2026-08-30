@@ -99,13 +99,21 @@ function initGSAP() {
 
   gsap.registerPlugin(ScrollTrigger);
 
+  // GSAP Lag Smoothing for consistent 60fps frame timing
+  gsap.ticker.lagSmoothing(1000, 16);
+
   /* Hero title char animation */
   const heroTitle = document.getElementById('hero-title');
   if (heroTitle) {
     const text = heroTitle.textContent;
     heroTitle.innerHTML = text.split('').map((c, i) =>
-      `<span class="char" style="animation-delay:${0.05 + i * 0.06}s">${c}</span>`
+      `<span class="char" style="display:inline-block;will-change:transform">${c}</span>`
     ).join('');
+
+    gsap.fromTo(heroTitle.querySelectorAll('.char'),
+      { opacity: 0, y: 60, rotateX: -45 },
+      { opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.05, ease: 'power3.out', delay: 0.1 }
+    );
   }
 
   /* Hero sub word animation */
@@ -113,10 +121,36 @@ function initGSAP() {
   if (heroSub) {
     const html = heroSub.innerHTML;
     const lines = html.split('<br>');
-    heroSub.innerHTML = lines.map((line, li) =>
-      `<span class="word" style="display:block;animation-delay:${0.8 + li * 0.15}s">${line}</span>`
+    heroSub.innerHTML = lines.map((line) =>
+      `<span class="word" style="display:block;will-change:transform,opacity">${line}</span>`
     ).join('');
+
+    gsap.fromTo(heroSub.querySelectorAll('.word'),
+      { opacity: 0, x: -30 },
+      { opacity: 1, x: 0, duration: 0.7, stagger: 0.15, ease: 'power2.out', delay: 0.6 }
+    );
   }
+
+  /* 3D Tilt interactivity on service and project cards */
+  const tiltCards = document.querySelectorAll('.service-card, .project-card, .stat-card');
+  tiltCards.forEach(card => {
+    card.classList.add('tilt-card-3d');
+    const xTo = gsap.quickTo(card, "rotateY", { duration: 0.4, ease: "power2.out" });
+    const yTo = gsap.quickTo(card, "rotateX", { duration: 0.4, ease: "power2.out" });
+
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      xTo(x * 16);
+      yTo(-y * 16);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      xTo(0);
+      yTo(0);
+    });
+  });
 
   /* About words */
   const aboutWords = document.querySelectorAll('.about-headline .split-word');

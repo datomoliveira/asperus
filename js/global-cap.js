@@ -56,10 +56,42 @@ export function initGlobalCap() {
     heroCtx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, cx, cy, img.naturalWidth * ratio, img.naturalHeight * ratio);
   }
 
+  // Fallback 3D cap for Hero canvas if image sequence fails/is missing
+  let hero3DRenderer, hero3DScene, hero3DCamera, heroCap3D;
+
+  function initHero3DFallback() {
+    if (!heroCanvas || heroCap3D) return;
+    try {
+      hero3DRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
+      hero3DRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      hero3DRenderer.setSize(heroCanvas.clientWidth || 600, heroCanvas.clientHeight || 600);
+
+      hero3DScene = new THREE.Scene();
+      hero3DCamera = new THREE.PerspectiveCamera(40, (heroCanvas.clientWidth || 600) / (heroCanvas.clientHeight || 600), 0.1, 100);
+      hero3DCamera.position.set(0, 0, 5.5);
+
+      hero3DScene.add(new THREE.AmbientLight(0xffffff, 0.7));
+      const dLight = new THREE.DirectionalLight(0xC4A96B, 2.5);
+      dLight.position.set(3, 4, 4);
+      hero3DScene.add(dLight);
+
+      heroCap3D = buildCap();
+      heroCap3D.scale.setScalar(1.15);
+      hero3DScene.add(heroCap3D);
+    } catch (e) {
+      console.warn("Hero 3D fallback init error:", e);
+    }
+  }
+
   if (heroCanvas) {
     preloadHeroFrames();
     window.addEventListener('resize', resizeHeroCanvas);
-    setTimeout(resizeHeroCanvas, 100);
+    setTimeout(() => {
+      resizeHeroCanvas();
+      if (loadedCount === 0) {
+        initHero3DFallback();
+      }
+    }, 400);
 
     // Rotação suave do boné no Hero ao mover o mouse
     document.addEventListener('mousemove', (e) => {
@@ -119,7 +151,7 @@ export function initGlobalCap() {
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     const scrollProgress = Math.min(1, Math.max(0, scrollY / (maxScroll || 1)));
 
-    // Animação dos frames do Hero
+    // Animação dos frames do Hero ou Fallback 3D
     if (heroCanvas && loadedCount > 0) {
       // Combina scroll com mouse
       const scrollFrameOffset = (scrollY / window.innerHeight) * 30;
@@ -127,6 +159,10 @@ export function initGlobalCap() {
       currentFrame += (computedTarget - currentFrame) * 0.1;
       const idx = Math.floor(Math.abs(currentFrame)) % TOTAL_FRAMES;
       renderHeroFrame(idx);
+    } else if (heroCap3D && hero3DRenderer && hero3DScene && hero3DCamera) {
+      heroCap3D.rotation.y += 0.008 + mouseX * 0.02;
+      heroCap3D.rotation.x = Math.sin(Date.now() * 0.001) * 0.1 + mouseY * 0.2;
+      hero3DRenderer.render(hero3DScene, hero3DCamera);
     }
 
     // Animação do Boné 3D de Fundo que viaja pelo site
