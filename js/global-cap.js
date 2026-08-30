@@ -33,12 +33,9 @@ export function initGlobalCap() {
 
   function resizeHeroCanvas() {
     if (!heroCanvas) return;
-    const rect = heroCanvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const w = rect.width || heroCanvas.clientWidth || window.innerWidth * 0.6;
-    const h = rect.height || heroCanvas.clientHeight || window.innerHeight * 0.85;
-    heroCanvas.width = Math.round(w * dpr);
-    heroCanvas.height = Math.round(h * dpr);
+    heroCanvas.width = Math.round(window.innerWidth * dpr);
+    heroCanvas.height = Math.round(window.innerHeight * dpr);
     renderHeroFrame(Math.round(currentFrame));
   }
 
@@ -49,10 +46,10 @@ export function initGlobalCap() {
     const ch = heroCanvas.height;
     heroCtx.clearRect(0, 0, cw, ch);
 
-    // Contain draw at full crisp scale
+    // Full cover mode across the entire screen
     const hRatio = cw / img.naturalWidth;
     const vRatio = ch / img.naturalHeight;
-    const ratio  = Math.min(hRatio, vRatio);
+    const ratio  = Math.max(hRatio, vRatio);
     const w = img.naturalWidth * ratio;
     const h = img.naturalHeight * ratio;
     const cx = (cw - w) / 2;
@@ -69,13 +66,11 @@ export function initGlobalCap() {
     try {
       hero3DRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
       hero3DRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-      const w = heroCanvas.clientWidth || window.innerWidth * 0.6;
-      const h = heroCanvas.clientHeight || window.innerHeight * 0.85;
-      hero3DRenderer.setSize(w, h);
+      hero3DRenderer.setSize(window.innerWidth, window.innerHeight);
 
       hero3DScene = new THREE.Scene();
-      hero3DCamera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
-      hero3DCamera.position.set(0, 0, 5.2);
+      hero3DCamera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+      hero3DCamera.position.set(0, 0, 5.0);
 
       hero3DScene.add(new THREE.AmbientLight(0xffffff, 0.7));
       const dLight = new THREE.DirectionalLight(0xC4A96B, 2.8);
@@ -83,7 +78,7 @@ export function initGlobalCap() {
       hero3DScene.add(dLight);
 
       heroCap3D = buildCap();
-      heroCap3D.scale.setScalar(1.25);
+      heroCap3D.scale.setScalar(1.4);
       hero3DScene.add(heroCap3D);
     } catch (e) {
       console.warn("Hero 3D fallback init error:", e);
