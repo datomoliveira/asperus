@@ -13,7 +13,7 @@ function makeServiceScene(canvas, type) {
   const W = canvas.clientWidth || 200, H = canvas.clientHeight || 120;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 50);
@@ -47,8 +47,22 @@ function makeServiceScene(canvas, type) {
   canvas.addEventListener('mouseenter', () => { hovered = true; });
   canvas.addEventListener('mouseleave', () => { hovered = false; });
 
-  let frameId;
+  let frameId = null;
+  let isVisible = false;
+
+  const observer = new IntersectionObserver(([entry]) => {
+    isVisible = entry.isIntersecting;
+    if (isVisible && !frameId) {
+      animate();
+    } else if (!isVisible && frameId) {
+      cancelAnimationFrame(frameId);
+      frameId = null;
+    }
+  }, { threshold: 0.05 });
+  observer.observe(canvas);
+
   function animate() {
+    if (!isVisible) return;
     frameId = requestAnimationFrame(animate);
     const speed = hovered ? 0.025 : 0.008;
     mesh.rotation.y += speed;
@@ -57,8 +71,14 @@ function makeServiceScene(canvas, type) {
     wire.rotation.x = mesh.rotation.x;
     renderer.render(scene, camera);
   }
-  animate();
-  return { destroy() { cancelAnimationFrame(frameId); renderer.dispose(); } };
+
+  return {
+    destroy() {
+      observer.disconnect();
+      if (frameId) cancelAnimationFrame(frameId);
+      renderer.dispose();
+    }
+  };
 }
 
 export function initServiceScenes() {
@@ -79,7 +99,7 @@ export function initAvatarScene() {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   const W = canvas.clientWidth, H = canvas.clientHeight;
   renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
@@ -206,8 +226,22 @@ export function initAvatarScene() {
   }
   window.addEventListener('mousemove', onMouseMove);
 
-  let frameId, t = 0;
+  let frameId = null, t = 0;
+  let isVisible = false;
+
+  const observer = new IntersectionObserver(([entry]) => {
+    isVisible = entry.isIntersecting;
+    if (isVisible && !frameId) {
+      animate();
+    } else if (!isVisible && frameId) {
+      cancelAnimationFrame(frameId);
+      frameId = null;
+    }
+  }, { threshold: 0.05 });
+  observer.observe(canvas);
+
   function animate() {
+    if (!isVisible) return;
     frameId = requestAnimationFrame(animate);
     t += 0.02;
 
@@ -232,10 +266,11 @@ export function initAvatarScene() {
 
     renderer.render(scene, camera);
   }
-  animate();
+
   return {
     destroy() {
-      cancelAnimationFrame(frameId);
+      observer.disconnect();
+      if (frameId) cancelAnimationFrame(frameId);
       window.removeEventListener('mousemove', onMouseMove);
       renderer.dispose();
     }
@@ -249,7 +284,7 @@ export function initContactScene() {
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -268,15 +303,28 @@ export function initContactScene() {
   );
   scene.add(ring);
 
-  let frameId;
+  let frameId = null;
+  let isVisible = false;
+
+  const observer = new IntersectionObserver(([entry]) => {
+    isVisible = entry.isIntersecting;
+    if (isVisible && !frameId) {
+      animate();
+    } else if (!isVisible && frameId) {
+      cancelAnimationFrame(frameId);
+      frameId = null;
+    }
+  }, { threshold: 0.05 });
+  observer.observe(canvas);
+
   function animate() {
+    if (!isVisible) return;
     frameId = requestAnimationFrame(animate);
     mesh.rotation.y += 0.003;
     mesh.rotation.x += 0.001;
     ring.rotation.x += 0.002;
     renderer.render(scene, camera);
   }
-  animate();
 
   window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -284,5 +332,5 @@ export function initContactScene() {
     camera.updateProjectionMatrix();
   });
 
-  return { destroy() { cancelAnimationFrame(frameId); renderer.dispose(); } };
+  return { destroy() { observer.disconnect(); if (frameId) cancelAnimationFrame(frameId); renderer.dispose(); } };
 }

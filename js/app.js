@@ -11,20 +11,30 @@ function initCursor() {
   const dot    = document.getElementById('cursor-dot');
   if (!cursor || !dot) return;
 
-  let mx = -100, my = -100, cx = -100, cy = -100;
+  if (typeof gsap !== 'undefined') {
+    const xCursor = gsap.quickTo(cursor, "x", { duration: 0.15, ease: "power2.out" });
+    const yCursor = gsap.quickTo(cursor, "y", { duration: 0.15, ease: "power2.out" });
+    const xDot    = gsap.quickTo(dot, "x", { duration: 0.02, ease: "power1.out" });
+    const yDot    = gsap.quickTo(dot, "y", { duration: 0.02, ease: "power1.out" });
 
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-
-  function tick() {
-    cx += (mx - cx) * 0.12;
-    cy += (my - cy) * 0.12;
-    cursor.style.left = cx + 'px';
-    cursor.style.top  = cy + 'px';
-    dot.style.left = mx + 'px';
-    dot.style.top  = my + 'px';
-    requestAnimationFrame(tick);
+    document.addEventListener('mousemove', e => {
+      xCursor(e.clientX - 18);
+      yCursor(e.clientY - 18);
+      xDot(e.clientX - 2.5);
+      yDot(e.clientY - 2.5);
+    }, { passive: true });
+  } else {
+    let mx = -100, my = -100, cx = -100, cy = -100;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    function tick() {
+      cx += (mx - cx) * 0.15;
+      cy += (my - cy) * 0.15;
+      cursor.style.transform = `translate3d(${cx - 18}px, ${cy - 18}px, 0)`;
+      dot.style.transform = `translate3d(${mx - 2.5}px, ${my - 2.5}px, 0)`;
+      requestAnimationFrame(tick);
+    }
+    tick();
   }
-  tick();
 
   // Hide on touch
   document.addEventListener('touchstart', () => {

@@ -63,7 +63,7 @@ export function initGlobalCap() {
     if (!heroCanvas || heroCap3D) return;
     try {
       hero3DRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
-      hero3DRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      hero3DRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       hero3DRenderer.setSize(heroCanvas.clientWidth || 600, heroCanvas.clientHeight || 600);
 
       hero3DScene = new THREE.Scene();
@@ -104,7 +104,7 @@ export function initGlobalCap() {
   let renderer, scene, camera, cap3D;
   if (bgCanvas) {
     renderer = new THREE.WebGLRenderer({ canvas: bgCanvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     scene = new THREE.Scene();
