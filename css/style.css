@@ -183,26 +183,28 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 /* ===== HERO ===== */
 .hero-wrapper {
   position: relative;
+  width: 100%;
   height: 100vh;
-  z-index: 1;
+  min-height: 680px;
+  z-index: 2;
 }
 .hero {
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: relative;
   width: 100%;
+  height: 100%;
+  min-height: 680px;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
   will-change: transform, opacity;
-  transform-origin: center center;
 }
 .hero-left {
-  padding: 8rem 0 8rem 3rem;
+  padding: 6rem 0 6rem 3.5rem;
   display: flex; flex-direction: column; gap: 1.5rem;
-  z-index: 2; position: relative;
-  max-width: 650px;
+  z-index: 3; position: relative;
+  max-width: 680px;
   width: 100%;
+  will-change: transform, opacity;
 }
 .hero-eyebrow {
   display: flex; align-items: center; gap: 1rem;
@@ -214,8 +216,8 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 .hero-line { display: block; width: 40px; height: 1px; background: var(--gold); }
 .hero-title {
   font-family: var(--font-head);
-  font-size: clamp(4rem, 9vw, 9rem);
-  line-height: 0.9;
+  font-size: clamp(4.5rem, 10vw, 9.5rem);
+  line-height: 0.88;
   letter-spacing: -0.03em;
   color: var(--cream);
   overflow: hidden;
@@ -233,9 +235,9 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 }
 .hero-sub {
   font-family: var(--font-head);
-  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
   line-height: 1.4;
-  color: rgba(232,226,217,0.7);
+  color: rgba(232,226,217,0.75);
   letter-spacing: 0.05em;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
@@ -281,23 +283,24 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 .hero-right {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  right: 0;
+  width: 65%;
   height: 100%;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   pointer-events: none;
+  will-change: transform, opacity;
 }
 .hero-right::after {
   content: '';
   position: absolute;
   inset: 0;
   background: 
-    linear-gradient(to bottom, rgba(8, 8, 8, 0.7) 0%, transparent 25%),
-    linear-gradient(to right, rgba(8, 8, 8, 0.95) 0%, rgba(8, 8, 8, 0.75) 40%, rgba(8, 8, 8, 0.3) 70%, rgba(8, 8, 8, 0.1) 100%);
+    linear-gradient(to bottom, rgba(8, 8, 8, 0.5) 0%, transparent 25%),
+    linear-gradient(to right, rgba(8, 8, 8, 0.9) 0%, rgba(8, 8, 8, 0.5) 35%, transparent 70%);
   z-index: 2;
   pointer-events: none;
 }
@@ -310,7 +313,7 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   height: 100%;
   object-fit: contain;
   opacity: 0;
-  transition: opacity 0.8s var(--ease-out);
+  transition: opacity 0.6s var(--ease-out);
 }
 .hero-media.active {
   opacity: 1;
@@ -319,30 +322,22 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 #hero-cap-canvas {
   width: 100%;
   height: 100%;
+  max-width: 950px;
+  max-height: 950px;
   display: block;
 }
 
 /* ===== PERSISTENT BACKGROUND 3D CAP ===== */
 .bg-cap-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0.2;
-  transition: opacity 0.4s ease;
-  will-change: transform, opacity;
+  display: none;
 }
-@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
 
 .hero-scroll-indicator {
-  position: absolute; bottom: 2rem; left: 3rem;
+  position: absolute; bottom: 2rem; left: 3.5rem;
   display: flex; flex-direction: column; align-items: center;
-  gap: 0.5rem; z-index: 2;
+  gap: 0.5rem; z-index: 3;
   font-size: 0.65rem; letter-spacing: 0.2em;
-  text-transform: uppercase; color: rgba(232,226,217,0.3);
+  text-transform: uppercase; color: rgba(232,226,217,0.35);
 }
 .scroll-line {
   width: 1px; height: 60px;
@@ -367,26 +362,26 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 .about {
   position: relative;
   z-index: 5;
-  padding: 8rem 3rem 6rem 3rem;
+  padding: 9rem 3rem 6rem 3rem;
   background: var(--bg);
-  box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 -35px 70px rgba(0, 0, 0, 0.95);
 }
 .layer-edge-divider {
   position: absolute;
-  top: -138px;
+  top: -128px;
   left: 0;
   width: 100%;
-  height: 140px;
+  height: 150px;
   pointer-events: none;
   z-index: 6;
-  overflow: hidden;
+  overflow: visible;
+  will-change: transform;
 }
 .layer-divider-svg {
   width: 100%;
   height: 100%;
   display: block;
-  fill: #080808;
-  filter: drop-shadow(0 -4px 10px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 -6px 16px rgba(196, 169, 107, 0.2)) drop-shadow(0 -4px 10px rgba(0, 0, 0, 0.7));
 }
 .about-grid {
   display: grid; grid-template-columns: 1fr 1fr;
