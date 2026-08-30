@@ -1,4 +1,4 @@
-// global-cap.js — Controlador do Boné 3D Hero (Sequência de Imagens e Fallback WebGL)
+// global-cap.js — Controlador do Boné 3D Hero e Fundo Persistente Contínuo por Todo o Site
 import * as THREE from 'three';
 import { buildCap } from './cap.js';
 
@@ -7,14 +7,12 @@ const FRAMES_PATH = 'hero_asperus/hero asperus_';
 
 export function initGlobalCap() {
   const heroCanvas = document.getElementById('hero-cap-canvas');
-  const heroWrapper = document.getElementById('hero-wrapper') || heroCanvas;
   if (!heroCanvas) return;
 
-  // 1. CARREGAMENTO E SCRUB DAS 56 IMAGENS NA HERO
+  // 1. CARREGAMENTO E SCRUB DAS 56 IMAGENS NA SEQUÊNCIA GLOBAL
   let frames = [];
   let loadedCount = 0;
   let currentFrame = 0;
-  let targetFrame = 0;
   let heroCtx = heroCanvas.getContext('2d');
 
   function pad(num, size = 3) {
@@ -37,8 +35,8 @@ export function initGlobalCap() {
     if (!heroCanvas) return;
     const rect = heroCanvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const w = rect.width || heroCanvas.clientWidth || 800;
-    const h = rect.height || heroCanvas.clientHeight || 800;
+    const w = rect.width || heroCanvas.clientWidth || window.innerWidth * 0.6;
+    const h = rect.height || heroCanvas.clientHeight || window.innerHeight * 0.85;
     heroCanvas.width = Math.round(w * dpr);
     heroCanvas.height = Math.round(h * dpr);
     renderHeroFrame(Math.round(currentFrame));
@@ -51,7 +49,7 @@ export function initGlobalCap() {
     const ch = heroCanvas.height;
     heroCtx.clearRect(0, 0, cw, ch);
 
-    // Contain draw at full scale
+    // Contain draw at full crisp scale
     const hRatio = cw / img.naturalWidth;
     const vRatio = ch / img.naturalHeight;
     const ratio  = Math.min(hRatio, vRatio);
@@ -71,8 +69,8 @@ export function initGlobalCap() {
     try {
       hero3DRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
       hero3DRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-      const w = heroCanvas.clientWidth || 800;
-      const h = heroCanvas.clientHeight || 800;
+      const w = heroCanvas.clientWidth || window.innerWidth * 0.6;
+      const h = heroCanvas.clientHeight || window.innerHeight * 0.85;
       hero3DRenderer.setSize(w, h);
 
       hero3DScene = new THREE.Scene();
@@ -101,54 +99,55 @@ export function initGlobalCap() {
     }
   }, 400);
 
-  // Rotação suave do boné no Hero ao mover o mouse
+  // Rotação suave do boné ao mover o mouse
   let mouseX = 0, mouseY = 0;
   document.addEventListener('mousemove', (e) => {
-    const normX = e.clientX / window.innerWidth;
-    targetFrame = Math.floor(normX * (TOTAL_FRAMES - 1));
     mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
     mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
   }, { passive: true });
 
-  // IntersectionObserver para rodar a animação apenas quando a Hero estiver visível
-  let isVisible = false;
+  // Scrub contínuo de rotação pelo scroll de toda a página (recomeçando a sequência continuamente)
   let rafId = null;
 
   function loop() {
-    if (!isVisible) return;
     rafId = requestAnimationFrame(loop);
 
     const scrollY = window.scrollY || window.pageYOffset;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollProgress = maxScroll > 0 ? (scrollY / maxScroll) : 0;
 
-    // Animação dos frames do Hero ou Fallback 3D
+    // Rotação contínua da sequência de 56 imagens por todo o site
+    // 3.5 voltas completas (loops contínuos) da Hero ao Rodapé
+    const totalLoops = 3.5;
+    const rawProgress = scrollProgress * TOTAL_FRAMES * totalLoops;
+    const mouseOffset = mouseX * 3.5;
+
+    // Garante loop contínuo e suave sem quebras
+    const computedTarget = (rawProgress + mouseOffset + TOTAL_FRAMES * 20) % TOTAL_FRAMES;
+    
+    // Interpolação suave para 60fps
+    let diff = computedTarget - currentFrame;
+    if (diff > TOTAL_FRAMES / 2) diff -= TOTAL_FRAMES;
+    if (diff < -TOTAL_FRAMES / 2) diff += TOTAL_FRAMES;
+    currentFrame += diff * 0.15;
+    if (currentFrame < 0) currentFrame += TOTAL_FRAMES;
+    currentFrame = currentFrame % TOTAL_FRAMES;
+
+    const idx = Math.floor(currentFrame) % TOTAL_FRAMES;
+
     if (loadedCount > 0) {
-      const scrollFrameOffset = (scrollY / window.innerHeight) * 25;
-      const computedTarget = (targetFrame + scrollFrameOffset) % TOTAL_FRAMES;
-      currentFrame += (computedTarget - currentFrame) * 0.12;
-      const idx = Math.floor(Math.abs(currentFrame)) % TOTAL_FRAMES;
       renderHeroFrame(idx);
     } else if (heroCap3D && hero3DRenderer && hero3DScene && hero3DCamera) {
-      heroCap3D.rotation.y += 0.008 + mouseX * 0.02;
-      heroCap3D.rotation.x = Math.sin(Date.now() * 0.001) * 0.1 + mouseY * 0.2;
+      heroCap3D.rotation.y = (scrollProgress * Math.PI * 7) + (mouseX * 0.3);
+      heroCap3D.rotation.x = (mouseY * 0.2);
       hero3DRenderer.render(hero3DScene, hero3DCamera);
     }
   }
 
-  const observer = new IntersectionObserver(([entry]) => {
-    isVisible = entry.isIntersecting;
-    if (isVisible && !rafId) {
-      loop();
-    } else if (!isVisible && rafId) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-  }, { threshold: 0.01 });
-
-  if (heroWrapper) observer.observe(heroWrapper);
+  loop();
 
   return {
     destroy() {
-      observer.disconnect();
       if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resizeHeroCanvas);
       if (hero3DRenderer) hero3DRenderer.dispose();

@@ -1,6 +1,6 @@
 /* ============================================================================
-   scroll-world — Engine de Parallax e Transição de Camadas (GSAP ScrollTrigger)
-   Projetado para 60 FPS com aceleração de GPU e profundidade 3D real
+   scroll-world — Barra de Progresso e Navegação Global (GSAP ScrollTrigger)
+   Projetado para 60 FPS com aceleração de GPU
    ========================================================================== */
 
 function injectCSS() {
@@ -45,64 +45,7 @@ function injectCSS() {
 }
 
 /**
- * Generates vertical-bar digital silhouette edge divider (Gold / Obsidian)
- */
-function initVerticalBarDivider() {
-  const svg = document.getElementById('layer-divider-svg');
-  if (!svg) return;
-
-  const totalWidth = 1440;
-  const maxHeight = 140;
-  const barWidth = 6;
-  const gap = 3;
-  const numBars = Math.floor(totalWidth / (barWidth + gap));
-
-  let pathD = `M 0 ${maxHeight} `;
-
-  for (let i = 0; i <= numBars; i++) {
-    const x = i * (barWidth + gap);
-    // Multi-frequency sine & noise wave creating modern digital silhouette landscape
-    const n1 = Math.sin(i * 0.07) * 35;
-    const n2 = Math.cos(i * 0.18) * 25;
-    const n3 = Math.sin(i * 0.03) * 45;
-    const noise = Math.abs(n1 + n2 + n3);
-    const barH = Math.max(20, Math.min(135, noise + ((i * 13) % 7) * 5));
-    const topY = maxHeight - barH;
-
-    pathD += `L ${x} ${topY.toFixed(1)} L ${(x + barWidth).toFixed(1)} ${topY.toFixed(1)} L ${(x + barWidth).toFixed(1)} ${maxHeight} `;
-  }
-
-  pathD += `L ${totalWidth} ${maxHeight} Z`;
-
-  svg.innerHTML = '';
-  
-  // Defs with gold gradient highlight
-  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-  const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-  grad.setAttribute('id', 'dividerGoldGrad');
-  grad.setAttribute('x1', '0%'); grad.setAttribute('y1', '0%');
-  grad.setAttribute('x2', '0%'); grad.setAttribute('y2', '100%');
-
-  const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-  stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', '#C4A96B'); stop1.setAttribute('stop-opacity', '0.85');
-  const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-  stop2.setAttribute('offset', '100%'); stop2.setAttribute('stop-color', '#080808'); stop2.setAttribute('stop-opacity', '1');
-
-  grad.appendChild(stop1); grad.appendChild(stop2);
-  defs.appendChild(grad);
-  svg.appendChild(defs);
-
-  const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  pathEl.setAttribute('d', pathD);
-  pathEl.setAttribute('fill', 'url(#dividerGoldGrad)');
-  pathEl.setAttribute('stroke', '#C4A96B');
-  pathEl.setAttribute('stroke-width', '0.6');
-  pathEl.setAttribute('stroke-opacity', '0.5');
-  svg.appendChild(pathEl);
-}
-
-/**
- * Initializes scroll atmosphere and GSAP ScrollTrigger Parallax Layer Transition
+ * Initializes scroll atmosphere and GSAP ScrollTrigger
  */
 export function initScrollAtmosphere() {
   injectCSS();
@@ -154,50 +97,10 @@ export function initScrollAtmosphere() {
     sections.forEach(sec => dotObserver.observe(sec));
   }
 
-  // Generate Digital Silhouette Edge Divider
-  initVerticalBarDivider();
-
-  // GSAP ScrollTrigger Parallax Transition between Hero and About
+  // Scroll progress bar via ScrollTrigger (ultra-fast GPU render)
   if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 
-    const heroLeft = document.querySelector('.hero-left');
-    const heroRight = document.querySelector('.hero-right');
-    const heroScroll = document.querySelector('.hero-scroll-indicator');
-    const divider = document.getElementById('layer-edge-divider');
-    const heroWrapper = document.getElementById('hero-wrapper');
-
-    if (heroWrapper && divider) {
-      const parallaxTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: heroWrapper,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-        }
-      });
-
-      // Hero content moves up with depth delay and soft fade
-      if (heroLeft) {
-        parallaxTl.to(heroLeft, { yPercent: -28, opacity: 0.2, ease: 'none' }, 0);
-      }
-      if (heroRight) {
-        parallaxTl.to(heroRight, { yPercent: -16, opacity: 0.3, ease: 'none' }, 0);
-      }
-      if (heroScroll) {
-        parallaxTl.to(heroScroll, { opacity: 0, y: -30, ease: 'none' }, 0);
-      }
-
-      // Parallax movement for the edge divider (moves independently to create layered depth)
-      parallaxTl.fromTo(divider,
-        { y: 70, scaleY: 0.9 },
-        { y: -35, scaleY: 1.12, ease: 'none' },
-        0
-      );
-    }
-
-    // Scroll progress bar via ScrollTrigger (ultra-fast GPU render)
     gsap.to(fill, {
       scaleX: 1,
       ease: 'none',
@@ -210,4 +113,5 @@ export function initScrollAtmosphere() {
     });
   }
 }
+
 

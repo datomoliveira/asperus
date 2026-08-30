@@ -319,17 +319,42 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   opacity: 1;
 }
 
-#hero-cap-canvas {
-  width: 100%;
-  height: 100%;
+/* ===== PERSISTENT GLOBAL HERO CAP BACKGROUND ===== */
+.global-cap-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 5vw;
+  overflow: hidden;
+  will-change: transform;
+}
+.hero-cap-canvas {
+  width: 58vw;
+  height: 88vh;
   max-width: 950px;
   max-height: 950px;
   display: block;
+  object-fit: contain;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
 }
-
-/* ===== PERSISTENT BACKGROUND 3D CAP ===== */
-.bg-cap-canvas {
-  display: none;
+@media (max-width: 900px) {
+  .global-cap-container {
+    justify-content: center;
+    padding-right: 0;
+  }
+  .hero-cap-canvas {
+    width: 90vw;
+    height: 65vh;
+    opacity: 0.5;
+  }
 }
 
 .hero-scroll-indicator {
@@ -361,27 +386,13 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
 /* ===== ABOUT ===== */
 .about {
   position: relative;
-  z-index: 5;
-  padding: 9rem 3rem 6rem 3rem;
-  background: var(--bg);
-  box-shadow: 0 -35px 70px rgba(0, 0, 0, 0.95);
-}
-.layer-edge-divider {
-  position: absolute;
-  top: -128px;
-  left: 0;
-  width: 100%;
-  height: 150px;
-  pointer-events: none;
-  z-index: 6;
-  overflow: visible;
-  will-change: transform;
-}
-.layer-divider-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  filter: drop-shadow(0 -6px 16px rgba(196, 169, 107, 0.2)) drop-shadow(0 -4px 10px rgba(0, 0, 0, 0.7));
+  z-index: 3;
+  padding: 8rem 3rem 6rem 3rem;
+  background: rgba(8, 8, 8, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-top: 1px solid rgba(196, 169, 107, 0.15);
+  border-bottom: 1px solid rgba(196, 169, 107, 0.1);
 }
 .about-grid {
   display: grid; grid-template-columns: 1fr 1fr;
@@ -820,46 +831,8 @@ body:has(a:hover) .cursor, body:has(button:hover) .cursor {
   display: none !important;
 }
 
-/* ══════════════════════════════════════════════
-   LAYER EDGE DIVIDER & GSAP 3D PERSPECTIVE
-══════════════════════════════════════════════ */
-.about {
-  position: relative;
-  z-index: 5;
-}
-.layer-edge-divider {
-  position: absolute;
-  top: -120px;
-  left: 0;
-  width: 100%;
-  height: 120px;
-  z-index: 12;
-  pointer-events: none;
-  overflow: hidden;
-}
-.layer-divider-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  filter: drop-shadow(0 -6px 12px rgba(196, 169, 107, 0.2));
-}
-
-.bg-cap-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
 .tilt-card-3d {
   transform-style: preserve-3d;
   transition: box-shadow 0.3s ease;
   will-change: transform;
 }
-
-
-
