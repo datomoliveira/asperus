@@ -1,0 +1,11 @@
+{
+  "buildPath": "code",
+  "hook": {
+    "enabled": true,
+    "maxFindings": 5,
+    "maxChars": 8000,
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": []
+  }
+}

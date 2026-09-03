@@ -59,7 +59,7 @@ function initLoader(onDone) {
   const interval = setInterval(() => {
     pct += 25 + Math.random() * 10;
     if (pct > 100) pct = 100;
-    fill.style.width = pct + '%';
+    fill.style.transform = `scaleX(${pct / 100})`;
     if (status && step < steps.length) status.textContent = steps[step++];
     if (pct >= 100) {
       clearInterval(interval);

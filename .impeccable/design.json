@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-02T22:50:00.000Z",
+  "title": "Design System: ÁSPERUS",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Noble Gold",
+        "canonical": "oklch(73.5% 0.11 82)",
+        "tonalRamp": [
+          "#282110",
+          "#4c3f21",
+          "#736035",
+          "#9c844d",
+          "#C4A96B",
+          "#d5c192",
+          "#e5d8b9",
+          "#f5efe0"
+        ]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Obsidian Black",
+        "canonical": "oklch(12% 0 0)",
+        "tonalRamp": [
+          "#040404",
+          "#080808",
+          "#121212",
+          "#1c1c1c",
+          "#2b2b2b",
+          "#454545",
+          "#666666",
+          "#999999"
+        ]
+      },
+      "neutral-surface": {
+        "role": "neutral",
+        "displayName": "Deep Slate",
+        "canonical": "oklch(15% 0 0)",
+        "tonalRamp": [
+          "#050505",
+          "#0d0d0d",
+          "#171717",
+          "#242424",
+          "#363636",
+          "#525252",
+          "#757575",
+          "#aaaaaa"
+        ]
+      },
+      "neutral-text": {
+        "role": "neutral",
+        "displayName": "Mineral Cream",
+        "canonical": "oklch(91.5% 0.015 80)",
+        "tonalRamp": [
+          "#383530",
+          "#5e5a52",
+          "#878277",
+          "#b5b0a5",
+          "#E8E2D9",
+          "#f0ece5",
+          "#f7f5f2",
+          "#fcfbfa"
+        ]
+      },
+      "accent-red": {
+        "role": "secondary",
+        "displayName": "Crimson Spark",
+        "canonical": "oklch(58% 0.22 25)",
+        "tonalRamp": [
+          "#3d0e0e",
+          "#6e1a19",
+          "#a62726",
+          "#E24B4A",
+          "#eb7372",
+          "#f29d9c",
+          "#f8c7c7",
+          "#fdf2f2"
+        ]
+      },
+      "success-green": {
+        "role": "secondary",
+        "displayName": "Emerald Pulse",
+        "canonical": "oklch(78% 0.19 145)",
+        "tonalRamp": [
+          "#0c3315",
+          "#145222",
+          "#1e7332",
+          "#2c9c45",
+          "#4BE26B",
+          "#79ea91",
+          "#abf2bc",
+          "#e1fbe7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Hero",
+        "purpose": "Hero and major impact statements with tight leading."
+      },
+      "headline": {
+        "displayName": "Section Headline",
+        "purpose": "Major section headings and primary claims."
+      },
+      "headline-sm": {
+        "displayName": "Section Subheadline",
+        "purpose": "Intermediate headers and modal titles."
+      },
+      "title": {
+        "displayName": "Card Title",
+        "purpose": "Component and card titles."
+      },
+      "title-sm": {
+        "displayName": "Small Title",
+        "purpose": "Secondary card titles."
+      },
+      "body": {
+        "displayName": "Editorial Body",
+        "purpose": "Standard narrative reading paragraphs."
+      },
+      "body-sm": {
+        "displayName": "Small Body",
+        "purpose": "Compact descriptions and details."
+      },
+      "label": {
+        "displayName": "Category Label & Badge",
+        "purpose": "Tags, status badges and metadata markers."
+      },
+      "micro": {
+        "displayName": "Micro Marker",
+        "purpose": "Compact numbering and minimal metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "glass-ambient",
+        "value": "0 8px 32px 0 rgba(0, 0, 0, 0.4)",
+        "purpose": "Ambient elevation for translucent glass containers."
+      },
+      {
+        "name": "card-hover-glow",
+        "value": "0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(196,169,107,0.12)",
+        "purpose": "Luminous hover depth for interactive cards."
+      },
+      {
+        "name": "neuro-out",
+        "value": "4px 4px 12px rgba(0,0,0,0.8), -2px -2px 8px rgba(255,255,255,0.03)",
+        "purpose": "Tactile relief for form inputs and dark surfaces."
+      },
+      {
+        "name": "neuro-in",
+        "value": "inset 3px 3px 8px rgba(0,0,0,0.9), inset -2px -2px 6px rgba(255,255,255,0.03)",
+        "purpose": "Pressed / active input well depth."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Smooth exponential deceleration for interactive states and transitions."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "Standard layout and opacity transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "900px" },
+      { "name": "lg", "value": "1100px" },
+      { "name": "xl", "value": "1400px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Submit Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Luminous call-to-action button for contact form submission.",
+      "html": "<button class=\"ds-btn-submit\"><span class=\"ds-btn-text\">Enviar mensagem</span></button>",
+      "css": ".ds-btn-submit { position: relative; padding: 1.1rem 2rem; background: linear-gradient(135deg, rgba(196,169,107,0.3), rgba(196,169,107,0.15)); border: 1px solid #C4A96B; border-radius: 8px; font-family: 'Clash Display', sans-serif; font-size: 1rem; letter-spacing: 0.1em; color: #E8E2D9; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; } .ds-btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(196,169,107,0.25); } .ds-btn-submit:focus-visible { outline: 2px solid #C4A96B; outline-offset: 3px; }"
+    },
+    {
+      "name": "Glass Action Button",
+      "kind": "button",
+      "refersTo": "button-glass",
+      "description": "Translucent glass button for hero CTA and primary navigation.",
+      "html": "<button class=\"ds-btn-glass\">Ver Projetos <span class=\"ds-arrow\">↓</span></button>",
+      "css": ".ds-btn-glass { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1.75rem; background: rgba(8, 8, 8, 0.5); border: 1px solid rgba(196,169,107,0.4); backdrop-filter: blur(12px); border-radius: 6px; font-family: 'Clash Display', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em; color: #E8E2D9; transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; } .ds-btn-glass:hover { background: rgba(196, 169, 107, 0.2); border-color: #C4A96B; transform: translateY(-2px); } .ds-arrow { color: #C4A96B; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-glass:hover .ds-arrow { transform: translateY(2px); } .ds-btn-glass:focus-visible { outline: 2px solid #C4A96B; outline-offset: 3px; }"
+    },
+    {
+      "name": "Glass Service Card",
+      "kind": "card",
+      "refersTo": "card-glass",
+      "description": "Interactive glassmorphism card for displaying core services with 3D canvas viewport.",
+      "html": "<article class=\"ds-service-card\"><h3 class=\"ds-service-name\">Arquitetura de Sistemas</h3><p class=\"ds-service-desc\">Sistemas que escalam sem quebrar. Desenhados para durar.</p><span class=\"ds-service-tag\">Backend / Cloud</span></article>",
+      "css": ".ds-service-card { padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s; color: #E8E2D9; } .ds-service-card:hover { transform: translateY(-6px); border-color: rgba(196,169,107,0.35); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(196,169,107,0.1); } .ds-service-name { font-family: 'Clash Display', sans-serif; font-size: 1.1rem; } .ds-service-desc { font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.875rem; line-height: 1.65; color: rgba(232,226,217,0.65); } .ds-service-tag { font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: #C4A96B; margin-top: auto; }"
+    },
+    {
+      "name": "Neumorphic Text Input",
+      "kind": "input",
+      "refersTo": "input-neuro",
+      "description": "Tactile recessed input field with floating label support.",
+      "html": "<div class=\"ds-form-group\"><input type=\"text\" class=\"ds-neuro-input\" placeholder=\"Seu nome\" /><label class=\"ds-form-label\">Seu nome</label></div>",
+      "css": ".ds-form-group { position: relative; width: 100%; } .ds-neuro-input { width: 100%; background: #0D0D0D; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 1.1rem 1.25rem; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.95rem; color: #E8E2D9; box-shadow: 4px 4px 12px rgba(0,0,0,0.8), -2px -2px 8px rgba(255,255,255,0.03); outline: none; transition: box-shadow 0.3s, border-color 0.3s; } .ds-neuro-input:focus { border-color: #C4A96B; box-shadow: inset 3px 3px 8px rgba(0,0,0,0.9), inset -2px -2px 6px rgba(255,255,255,0.03), 0 0 0 1px rgba(196,169,107,0.3); } .ds-form-label { position: absolute; left: 1.25rem; top: -0.6rem; font-size: 0.7rem; color: #C4A96B; background: #0D0D0D; padding: 0 0.3rem; font-family: 'Cabinet Grotesk', sans-serif; }"
+    },
+    {
+      "name": "Tech Badge",
+      "kind": "chip",
+      "refersTo": "badge-pill",
+      "description": "Pill-shaped badge highlighting tech stack capabilities.",
+      "html": "<span class=\"ds-badge\">Three.js</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 0.35rem 0.85rem; background: rgba(196,169,107,0.08); border: 1px solid rgba(196,169,107,0.2); border-radius: 9999px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; color: #C4A96B; transition: background 0.2s, border-color 0.2s; } .ds-badge:hover { background: rgba(196,169,107,0.18); border-color: #C4A96B; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Obsidian Atelier",
+    "overview": "O universo visual da ÁSPERUS combina a precisão técnica e o rigor da engenharia de ponta com a elegância atemporal de um ateliê de alta costura. Fundamentado em pretos profundos de mármore e obsidiana com toques de ouro nobre e creme mineral, o sistema transmite exclusividade, autoridade e sofisticação imediata.\n\nA interface recua propositalmente para dar palco aos elementos 3D interativos em WebGL/Three.js e à tipografia escultural, mantendo uma densidade equilibrada e interações táteis e suaves.",
+    "keyCharacteristics": [
+      "Fundo escuro texturizado com mármore mineral sutil e gradientes radiais envolventes.",
+      "Acentos metálicos em ouro nobre (#C4A96B) aplicados com parcimônia para guiar o olhar.",
+      "Glassmorphism refinado com desfoque de alta fidelidade (20px blur) e bordas luminosas tênues.",
+      "Tipografia display marcante em harmonia com uma grotesque altamente legível.",
+      "Animações fluidas baseadas em curvas de desaceleração exponencial sem ruído ou saltos artificiais."
+    ],
+    "rules": [
+      {
+        "name": "The Precious Accent Rule",
+        "body": "O ouro primário (#C4A96B) é restrito a menos de 10% da área visível de qualquer viewport. A sua raridade confere o peso de autoridade e valor.",
+        "section": "colors"
+      },
+      {
+        "name": "The Balanced Headline Rule",
+        "body": "Títulos de seção nunca recebem quebras órfãs; o espaçamento acima do título é sempre no mínimo o dobro do espaçamento abaixo dele.",
+        "section": "typography"
+      },
+      {
+        "name": "The Luminous Border Rule",
+        "body": "Cards translúcidos recebem borda sutil de 1px com transparência máxima de 8% a 15% de branco ou ouro, garantindo contorno nítido sobre o fundo de mármore sem criar ruído visual.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do utilizar curvas de aceleração exponencial (cubic-bezier(0.16, 1, 0.3, 1)) para transições e micro-interações.",
+      "Do garantir contraste de texto superior a 4.5:1 para corpo e 3:1 para títulos display.",
+      "Do estilizar superfícies nativas do navegador (::selection, :focus-visible, scrollbars) dentro da paleta do sistema.",
+      "Do usar propriedades de aceleração por GPU (transform, opacity) em todas as animações interativas para evitar layout thrashing."
+    ],
+    "donts": [
+      "Don't utilizar animações de transição elásticas ou saltitantes (bounce easing).",
+      "Don't animar propriedades estruturais de layout como width, height, margin ou padding em elementos interativos.",
+      "Don't saturar a tela com mais de uma cor de acento chamando atenção concorrente.",
+      "Don't aplicar bordas coloridas duras ou sombras sem desfoque (hard offset box-shadows)."
+    ]
+  }
+}

@@ -7,30 +7,36 @@
       "skillPath": "designing-beautiful-websites/SKILL.md",
       "computedHash": "c67a4b7ed14f77e4e65a3546acd8360e376b6f6f539c32157593085e58e1988b"
     },
-    "scroll-world": {
-      "source": "oso95/scroll-world",
+    "gsap-skills": {
+      "source": "greensock/gsap-skills",
       "sourceType": "github",
-      "skillPath": "skills/scroll-world/SKILL.md"
-    },
-    "page-agent": {
-      "source": "alibaba/page-agent",
-      "sourceType": "github",
-      "skillPath": "skills/page-agent/SKILL.md"
+      "skillPath": "SKILL.md"
     },
     "img2threejs": {
       "source": "img2threejs/img2threejs",
       "sourceType": "github",
       "skillPath": "SKILL.md"
     },
-    "gsap-skills": {
-      "source": "greensock/gsap-skills",
+    "impeccable": {
+      "source": "pbakaus/impeccable",
       "sourceType": "github",
-      "skillPath": "SKILL.md"
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "96910b3b4031c9d09b8c8e128a11c512efa6fd273768b7fe520cc4b3f58bfb91"
     },
     "motion-design-skill": {
       "source": "LottieFiles/motion-design-skill",
       "sourceType": "github",
       "skillPath": "SKILL.md"
+    },
+    "page-agent": {
+      "source": "alibaba/page-agent",
+      "sourceType": "github",
+      "skillPath": "skills/page-agent/SKILL.md"
+    },
+    "scroll-world": {
+      "source": "oso95/scroll-world",
+      "sourceType": "github",
+      "skillPath": "skills/scroll-world/SKILL.md"
     }
   }
 }
