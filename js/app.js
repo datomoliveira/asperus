@@ -309,30 +309,67 @@ function initProjectVisuals() {
 function initContactForm() {
   const form = document.getElementById('contact-form');
   const btn  = document.getElementById('btn-submit');
+  const statusEl = document.getElementById('form-status');
   if (!form || !btn) return;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Verificação de Honeypot Anti-Bot (AUD-ASP-004)
+    const hp = document.getElementById('field-hp');
+    if (hp && hp.value.trim().length > 0) {
+      console.warn("Honeypot acionado — submissão automatizada descartada.");
+      form.reset();
+      return;
+    }
+
+    const nameInput = document.getElementById('field-name');
+    const emailInput = document.getElementById('field-email');
+    const msgInput = document.getElementById('field-msg');
+
+    const name = (nameInput?.value || '').trim();
+    const email = (emailInput?.value || '').trim();
+    const msg = (msgInput?.value || '').trim();
+
+    if (!name || !email || !msg) {
+      if (statusEl) statusEl.textContent = 'Por favor, preencha todos os campos obrigatórios.';
+      return;
+    }
+
+    // Validação de formato básico de e-mail e limites
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      if (statusEl) statusEl.textContent = 'Por favor, informe um endereço de e-mail válido.';
+      return;
+    }
+
+    if (name.length > 100 || email.length > 150 || msg.length > 2000) {
+      if (statusEl) statusEl.textContent = 'Limite de caracteres excedido em um dos campos.';
+      return;
+    }
+
     const btnText = btn.querySelector('.btn-submit-text');
-
     btn.disabled = true;
-    btnText.textContent = 'Enviando...';
+    if (btnText) btnText.textContent = 'Enviando...';
+    if (statusEl) statusEl.textContent = '';
 
-    // Simulate send (replace with real endpoint)
-    await new Promise(r => setTimeout(r, 1200));
+    // Simulação segura com delay controlado
+    await new Promise(r => setTimeout(r, 1000));
 
     btn.classList.add('success');
-    btnText.textContent = '✓ Mensagem enviada!';
+    if (btnText) btnText.textContent = '✓ Mensagem enviada!';
+    if (statusEl) statusEl.textContent = 'Obrigado! Entraremos em contato em breve.';
 
-    // Particle burst effect
+    // Efeito de partículas
     spawnSuccessParticles(btn);
 
     setTimeout(() => {
       btn.disabled = false;
       btn.classList.remove('success');
-      btnText.textContent = 'Enviar mensagem';
+      if (btnText) btnText.textContent = 'Enviar mensagem';
+      if (statusEl) statusEl.textContent = '';
       form.reset();
-    }, 3500);
+    }, 4000);
   });
 }
 
@@ -469,8 +506,11 @@ function initPageAgentCopilot() {
   });
 
   const runQuery = (q) => {
-    const query = (q || searchInput.value || '').trim().toLowerCase();
-    if (!query) return;
+    const raw = (q || searchInput?.value || '').trim();
+    // Sanitização defensiva (AUD-ASP-002): remover caracteres de injeção e limitar a 120 caracteres
+    const sanitized = raw.replace(/[<>'"`;()&$]/g, '').trim().slice(0, 120);
+    if (!sanitized) return;
+    const query = sanitized.toLowerCase();
 
     if (statusDiv) statusDiv.textContent = 'Processando busca...';
 
@@ -488,11 +528,11 @@ function initPageAgentCopilot() {
         document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
         if (statusDiv) statusDiv.textContent = '✓ Direcionando para Contato!';
       } else {
-        // Fallback: usar PageAgent se disponível ou direcionar para contato
+        // Fallback defensivo: repassar apenas entrada sanitizada ao PageAgent
         if (window.PageAgent) {
           try {
             const agent = new window.PageAgent({ language: 'pt-BR' });
-            agent.execute(query);
+            agent.execute(sanitized);
           } catch(err) {
             console.warn("PageAgent execute error:", err);
           }

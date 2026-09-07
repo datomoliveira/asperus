@@ -1,15 +1,24 @@
 @echo off
 echo ========================================================
-echo   ASPERUS — Copiando Imagens e Texturas do Projeto
+echo   ASPERUS — Verificacao e Copia de Assets do Projeto
 echo ========================================================
 echo.
 
-copy "C:\Users\Escola\.gemini\antigravity-ide\brain\254b1a88-d7b1-402e-b0cf-67cf20166737\dark_marble_texture_1783715237132.png" "C:\Users\Escola\Downloads\product_for_asperustech\asperus\dark-marble.png" /Y
-copy "C:\Users\Escola\.gemini\antigravity-ide\brain\254b1a88-d7b1-402e-b0cf-67cf20166737\media__1783711497783.jpg" "C:\Users\Escola\Downloads\product_for_asperustech\asperus\hero-cap.jpg" /Y
+set TARGET_DIR=%~dp0
+
+if exist "%TARGET_DIR%dark-marble.png" (
+    echo [OK] Textura dark-marble.png presente.
+) else (
+    echo [AVISO] dark-marble.png nao encontrado no diretorio raiz.
+)
+
+if exist "%TARGET_DIR%hero-cap.jpg" (
+    echo [OK] Imagem hero-cap.jpg presente.
+) else (
+    echo [AVISO] hero-cap.jpg nao encontrado no diretorio raiz.
+)
 
 echo.
 echo ========================================================
-echo   Arquivos copiados com sucesso!
-echo   Pressione qualquer tecla para fechar.
+echo   Verificacao concluida com sucesso!
 echo ========================================================
-pause >nul

@@ -1,0 +1,210 @@
+{
+  "audit_metadata": {
+    "project_name": "ÁSPERUS",
+    "project_root": "c:\\Users\\Escola\\Downloads\\product_for_asperustech\\asperus",
+    "repository": "datomoliveira/asperus",
+    "audit_date": "2026-09-07",
+    "standards": [
+      "OWASP ASVS 5.0 Level 2",
+      "OWASP Top 10:2025",
+      "NIST CSF 2.0",
+      "NIST SSDF SP 800-218"
+    ],
+    "authorization_mode": "STATIC_ONLY",
+    "authorized_by": "datomoliveira"
+  },
+  "summary": {
+    "critical": 0,
+    "high": 0,
+    "medium": 2,
+    "low": 2,
+    "informative": 2,
+    "total": 6
+  },
+  "findings": [
+    {
+      "id": "AUD-ASP-001",
+      "title": "Inclusão de Scripts Externos sem Subresource Integrity (SRI)",
+      "status": "CONFIRMADO",
+      "confidence": "alta",
+      "severity": "MÉDIA",
+      "cvss_v4": {
+        "score": 6.8,
+        "vector": "CVSS:4.0/AV:N/AC:H/AT:N/PR:N/UI:N/VC:L/VI:H/VA:N/SC:L/SI:H/SA:N"
+      },
+      "standards_mapping": {
+        "cwe": "CWE-353",
+        "owasp_top_10_2025": "A03:2025 - Software Supply Chain Failures",
+        "asvs_5_0": "V15.1.4"
+      },
+      "asset": "index.html:311-348",
+      "didactic_explanation": "O site baixa scripts vitais de animação e IA de servidores na internet sem checar se os arquivos foram alterados por terceiros no caminho. Se a CDN for comprometida, o código invasor roda diretamente no navegador do visitante.",
+      "why_this_is_a_security_issue": "Sem o atributo integrity contendo o hash criptográfico SHA do arquivo, o navegador confia cegamente no conteúdo entregue pelo servidor terceiro, possibilitando ataques de cadeia de suprimentos.",
+      "causal_chain": "Script remoto incluído sem hash de integridade -> CDN externa comprometida ou manipulada -> Script adulterado injetado -> Navegador executa código sem validação -> Impacto no cliente.",
+      "abuse_scenario": "Um invasor obtém controle sobre um domínio de CDN ou realiza ataque de DNS cache poisoning, injetando um script malicioso que sequestra a navegação ou captura dados do formulário de contato.",
+      "demonstrated_impact": "Scripts executam sem validação de integridade no navegador do usuário.",
+      "potential_impact": "Execução arbitrária de scripts no contexto do visitante (DOM XSS / Defacement).",
+      "severity_rationale": "MÉDIA porque a exploração requer comprometimento prévio da CDN (fornecedor de grande porte), mas o impacto na integridade da aplicação client-side é alto.",
+      "conditions_to_raise_or_lower_severity": "Subiria para ALTA se a aplicação manipulasse sessões confidenciais ou tokens administrativos; desceria para BAIXA caso os scripts fossem hospedados localmente.",
+      "technical_evidence": "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js\"></script> sem integrity attribute.",
+      "remediation": "Adicionar integridade de sub-recursos (SRI) com sha384 e crossorigin=anonymous a todas as tags de script remotas, ou hospedar os arquivos localmente.",
+      "regression_tests": [
+        "1. Confirmar presença de integrity e crossorigin em todas as tags script externas no index.html.",
+        "2. Simular alteração de 1 byte no arquivo e verificar que o navegador rejeita a execução com erro de integridade."
+      ]
+    },
+    {
+      "id": "AUD-ASP-002",
+      "title": "Entrada Livre e Não Sanitizada Encaminhada ao Assistente PageAgent",
+      "status": "CONFIRMADO",
+      "confidence": "alta",
+      "severity": "MÉDIA",
+      "cvss_v4": {
+        "score": 5.3,
+        "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:L/SC:N/SI:L/SA:L"
+      },
+      "standards_mapping": {
+        "cwe": "CWE-20",
+        "owasp_top_10_2025": "A05:2025 - Injection",
+        "asvs_5_0": "V2.1.1"
+      },
+      "asset": "js/app.js:471-510",
+      "didactic_explanation": "O texto digitado na barra de busca é repassado sem filtragem para a IA do navegador (PageAgent). Por ter capacidade de interagir com a tela, entradas maliciosas ou textos descontrolados podem desestabilizar o site.",
+      "why_this_is_a_security_issue": "O método execute() do PageAgent recebe uma string bruta sem validação prévia de tamanho ou de caracteres de formatação e controle, permitindo prompt injections client-side ou travamentos de interface.",
+      "causal_chain": "Usuário digita termo no campo de busca -> runQuery() extrai valor bruto sem filtro -> agent.execute(query) processa texto sem sanitização -> Possível comportamento anômalo na interface.",
+      "abuse_scenario": "Um usuário insere uma string com tags HTML, caracteres de controle ou instruções de override que forçam o agente a executar ações repetitivas no DOM, consumindo CPU do navegador do visitante.",
+      "demonstrated_impact": "Passagem de valores arbitrários e ilimitados de entrada diretamente ao manipulador de IA client-side.",
+      "potential_impact": "Travamento da aba do navegador, manipulação indevida de elementos do DOM ou comportamento confuso de navegação.",
+      "severity_rationale": "MÉDIA devido ao potencial de afetar a disponibilidade da interface do cliente, sem contudo atingir bancos de dados de backend.",
+      "conditions_to_raise_or_lower_severity": "Subiria se o agente tivesse permissão para realizar compras ou requisições autenticadas para APIs privadas; desce para BAIXA ao aplicar sanitização estrita.",
+      "technical_evidence": "js/app.js linhas 494-496: const agent = new window.PageAgent({ language: 'pt-BR' }); agent.execute(query);",
+      "remediation": "Sanitizar e truncar a variável query antes da chamada, removendo caracteres especiais e impondo limite máximo de comprimento.",
+      "regression_tests": [
+        "1. Enviar payload de teste com caracteres < > ' \" ; e verificar se são removidos.",
+        "2. Enviar string com mais de 200 caracteres e confirmar truncagem em 120 caracteres."
+      ]
+    },
+    {
+      "id": "AUD-ASP-003",
+      "title": "Ausência de Content Security Policy (CSP) e Diretivas de Referrer",
+      "status": "CONFIRMADO",
+      "confidence": "alta",
+      "severity": "MÉDIA",
+      "cvss_v4": {
+        "score": 5.1,
+        "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:L/VA:N/SC:L/SI:L/SA:N"
+      },
+      "standards_mapping": {
+        "cwe": "CWE-1021",
+        "owasp_top_10_2025": "A02:2025 - Security Misconfiguration",
+        "asvs_5_0": "V3.1.1"
+      },
+      "asset": "index.html:1-20",
+      "didactic_explanation": "O site não define para o navegador quais domínios e tipos de conexão são autorizados. Em caso de qualquer injeção de script acidental, não há barreira que impeça o vazamento de dados para servidores externos.",
+      "why_this_is_a_security_issue": "A ausência de CSP remove o mecanismo de defesa em profundidade primordial da web, permitindo conexões arbitrárias caso ocorra um XSS.",
+      "causal_chain": "Falta de meta tag CSP no HTML -> Navegador opera em modo irrestrito -> Script não autorizado tem permissão para carregar dados externos -> Quebra de defesa em profundidade.",
+      "abuse_scenario": "Caso ocorra comprometimento de um script terceiro, o código injetado pode conectar livremente a um servidor externo de exfiltração sem ser bloqueado pela política do navegador.",
+      "demonstrated_impact": "Navegador não impõe restrição de origens para scripts, conexões ou fontes.",
+      "potential_impact": "Exfiltração de dados e facilitação de ataques de XSS e Clickjacking.",
+      "severity_rationale": "MÉDIA por ser controle compensatório estrutural mandatário em aplicações modernas.",
+      "conditions_to_raise_or_lower_severity": "Subiria se o site manipulasse cartões ou dados financeiros; desce ao ser implementada a meta tag restritiva.",
+      "technical_evidence": "index.html não contém tag <meta http-equiv=\"Content-Security-Policy\">.",
+      "remediation": "Declarar Content-Security-Policy restringindo origens a 'self' e aos domínios estritamente necessários (cdnjs, unpkg, jsdelivr, fontshare).",
+      "regression_tests": [
+        "1. Validar presença da meta tag CSP no index.html.",
+        "2. Tentar carregar script de domínio não listado e confirmar bloqueio no console."
+      ]
+    },
+    {
+      "id": "AUD-ASP-004",
+      "title": "Formulário de Contato sem Tratamento Defensivo e Honeypot Anti-Spam",
+      "status": "CONFIRMADO",
+      "confidence": "alta",
+      "severity": "BAIXA",
+      "cvss_v4": {
+        "score": 2.1,
+        "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+      },
+      "standards_mapping": {
+        "cwe": "CWE-799",
+        "owasp_top_10_2025": "A06:2025 - Insecure Design",
+        "asvs_5_0": "V2.2"
+      },
+      "asset": "index.html:266-283",
+      "didactic_explanation": "O formulário de contato não possui tratamento de submissão no JavaScript nem armadilha contra robôs (honeypot), permitindo recarregamento indesejado ou submissões automatizadas em lote.",
+      "why_this_is_a_security_issue": "A ausência de prevenção padrão de submissão (preventDefault) e de validação client-side com honeypot expõe o canal de contato a spam automatizado.",
+      "causal_chain": "Bot ou usuário clica em Enviar -> Formulário sem listener JS submete via método padrão -> Recarregamento com parâmetros em URL ou perda da mensagem -> Risco de ruído e vazamento em histórico.",
+      "abuse_scenario": "Um bot automatizado faz scraping do site e dispara dezenas de submissões instantâneas no formulário de contato.",
+      "demonstrated_impact": "Formulário sem proteção anti-automação e sem interceptação via JavaScript.",
+      "potential_impact": "Poluição de dados de contato e recarregamento desnecessário de página.",
+      "severity_rationale": "BAIXA porque a aplicação atual ainda não conecta a um backend ativo de e-mails em produção.",
+      "conditions_to_raise_or_lower_severity": "Subiria para MÉDIA se o formulário disparasse e-mails reais via serviço tarifado (ex.: SendGrid/AWS SES).",
+      "technical_evidence": "index.html linhas 266-283: tag <form> sem action e sem listener JS correspondente.",
+      "remediation": "Adicionar campo honeypot oculto com tabindex -1 e aria-hidden, adicionar atributos maxlength e implementar listener defensivo no js/app.js.",
+      "regression_tests": [
+        "1. Preencher formulário e enviar: verificar que a página não recarrega.",
+        "2. Simular preenchimento do campo honeypot: verificar que o envio é descartado."
+      ]
+    },
+    {
+      "id": "AUD-ASP-005",
+      "title": "Exposição de Caminhos Locais do Sistema Operacional em Script",
+      "status": "CONFIRMADO",
+      "confidence": "alta",
+      "severity": "BAIXA",
+      "cvss_v4": {
+        "score": 2.3,
+        "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+      },
+      "standards_mapping": {
+        "cwe": "CWE-200",
+        "owasp_top_10_2025": "A02:2025 - Security Misconfiguration",
+        "asvs_5_0": "V5.1"
+      },
+      "asset": "copy_assets.bat:7-8",
+      "didactic_explanation": "O script copy_assets.bat contém caminhos absolutos do computador do desenvolvedor (C:\\Users\\Escola\\...) gravados diretamente no arquivo versionado no repositório público.",
+      "why_this_is_a_security_issue": "A exposição de caminhos absolutos locais revela nomes de contas de usuário e estrutura de diretórios da máquina do desenvolvedor.",
+      "causal_chain": "Script criado com caminho absoluto -> Arquivo comitado no repositório -> Repositório publicado no GitHub -> Informações do ambiente local expostas publicamente.",
+      "abuse_scenario": "Atacante inspeciona o repositório público para mapear o ambiente do desenvolvedor e estruturar campanhas direcionadas de engenharia social.",
+      "demonstrated_impact": "Nome de usuário 'Escola' e caminhos de diretório expostos no repositório.",
+      "potential_impact": "Reconhecimento facilitado do ambiente do desenvolvedor.",
+      "severity_rationale": "BAIXA por se tratar exclusivamente de metadados sem exposição de credenciais ou chaves.",
+      "conditions_to_raise_or_lower_severity": "Subiria se o arquivo contivesse tokens ou senhas.",
+      "technical_evidence": "copy_assets.bat: copy \"C:\\Users\\Escola\\.gemini\\...\" \"C:\\Users\\Escola\\...\"",
+      "remediation": "Substituir os caminhos absolutos por caminhos relativos ao diretório do projeto e adicionar o arquivo ao .gitignore.",
+      "regression_tests": [
+        "1. Buscar referências a C:\\Users no código e confirmar zero ocorrências."
+      ]
+    },
+    {
+      "id": "AUD-ASP-006",
+      "title": "Ausência de Arquivo .gitignore para Proteção do Repositório Git",
+      "status": "CONFIRMADO",
+      "confidence": "alta",
+      "severity": "INFORMATIVA",
+      "cvss_v4": {
+        "score": 0.0,
+        "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:N/SI:N/SA:N"
+      },
+      "standards_mapping": {
+        "cwe": "CWE-200",
+        "owasp_top_10_2025": "A02:2025 - Security Misconfiguration",
+        "asvs_5_0": "V13.1"
+      },
+      "asset": ".gitignore (ausente)",
+      "didactic_explanation": "O projeto não possui um arquivo .gitignore configurado, o que aumenta o risco de arquivos com senhas, variáveis de ambiente ou caches serem comitados por engano.",
+      "why_this_is_a_security_issue": "Sem .gitignore, o comando git add . adiciona qualquer arquivo criado no diretório de trabalho, incluindo potenciais arquivos .env ou credenciais locais.",
+      "causal_chain": "Arquivo .gitignore ausente -> Desenvolvedor cria arquivo .env com chaves -> Execução de commit genérico -> Chave privada vazada no GitHub.",
+      "abuse_scenario": "Futuro vazamento de credenciais na hipótese de criação de arquivos locais contendo chaves de API para backend.",
+      "demonstrated_impact": "Ausência de filtragem automática no controle de versão Git.",
+      "potential_impact": "Vazamento inadvertido de credenciais e arquivos confidenciais no repositório remoto.",
+      "severity_rationale": "INFORMATIVA no presente momento pois nenhum arquivo sensível foi comitado.",
+      "conditions_to_raise_or_lower_severity": "Subiria para CRÍTICA se um arquivo com segredo já estivesse versionado no histórico.",
+      "technical_evidence": "Arquivo .gitignore não encontrado no repositório.",
+      "remediation": "Criar arquivo .gitignore com regras para .env*, .agents/, .impeccable/, logs e arquivos temporários.",
+      "regression_tests": [
+        "1. Criar arquivo de teste .env.local e executar git status para verificar que ele é ignorado."
+      ]
+    }
+  ]
+}

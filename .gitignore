@@ -1,0 +1,29 @@
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+
+# IDE & Agent Configs
+.agents/
+.impeccable/
+.vscode/
+.idea/
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+
+# Logs & Temporary Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies (if added later)
+node_modules/
+dist/
+build/

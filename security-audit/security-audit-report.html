@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Executivo e Técnico de Cibersegurança — ÁSPERUS</title>
+  <style>
+    :root {
+      --bg-dark: #080808;
+      --bg-card: #121212;
+      --bg-card-alt: #181818;
+      --border-color: rgba(196, 169, 107, 0.25);
+      --gold: #C4A96B;
+      --gold-light: #E8E2D9;
+      --text-main: #EDEDED;
+      --text-muted: #9E9E9E;
+      --danger: #E24B4A;
+      --warning: #E2994A;
+      --success: #6BE2A4;
+      --info: #4A90E2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+    }
+
+    header {
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 28px;
+      margin-bottom: 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .brand-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .brand-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 4px;
+    }
+
+    .meta-box {
+      background: var(--bg-card-alt);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 13px;
+      color: var(--gold-light);
+    }
+
+    h2 {
+      font-size: 22px;
+      color: var(--gold);
+      margin: 36px 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(196, 169, 107, 0.15);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 17px;
+      color: var(--gold-light);
+      margin: 20px 0 10px 0;
+    }
+
+    p { margin-bottom: 14px; font-size: 15px; color: #D5D5D5; }
+    ul, ol { margin-left: 24px; margin-bottom: 16px; font-size: 14px; color: #CCCCCC; }
+    li { margin-bottom: 6px; }
+
+    /* METRIC CARDS */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .metric-card {
+      background: var(--bg-card-alt);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .metric-card.crit { border-color: var(--danger); }
+    .metric-card.med { border-color: var(--warning); }
+    .metric-card.low { border-color: var(--info); }
+    .metric-card.info { border-color: var(--success); }
+
+    .metric-value {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    /* FINDING CARD */
+    .finding-card {
+      background: var(--bg-card-alt);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+      page-break-inside: avoid;
+    }
+
+    .finding-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .finding-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge-med { background: rgba(226, 153, 74, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-low { background: rgba(74, 144, 226, 0.2); color: var(--info); border: 1px solid var(--info); }
+    .badge-info { background: rgba(107, 226, 164, 0.2); color: var(--success); border: 1px solid var(--success); }
+
+    .didactic-box {
+      background: rgba(196, 169, 107, 0.05);
+      border-left: 4px solid var(--gold);
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .didactic-box strong { color: var(--gold); }
+
+    .tech-box {
+      background: #0A0A0A;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 16px;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    .tech-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+      font-family: monospace;
+      color: var(--gold-light);
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, Menlo, Monaco, monospace;
+      background: #1F1F1F;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #FFD57E;
+      font-size: 13px;
+    }
+
+    pre code {
+      display: block;
+      padding: 12px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    th {
+      background: var(--bg-card-alt);
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    footer {
+      margin-top: 48px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    @media print {
+      body { background: #FFFFFF; color: #111111; padding: 0; }
+      .container { border: none; box-shadow: none; padding: 0; max-width: 100%; background: #FFFFFF; }
+      .brand-title { color: #000000; }
+      h2 { color: #8A6D3B; border-bottom-color: #DDD; }
+      .finding-card { background: #F9F9F9; border: 1px solid #CCC; color: #111; page-break-inside: avoid; }
+      .tech-box { background: #EEEEEE; color: #222; border-color: #CCC; }
+      code { background: #E0E0E0; color: #900; }
+      .badge { border: 1px solid #666; color: #000; background: #DDD; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <div class="brand-title">ÁSPERUS</div>
+      <div class="brand-sub">Relatório de Auditoria de Cibersegurança & Postura Defensiva</div>
+    </div>
+    <div class="meta-box">
+      <strong>Data:</strong> 07 de Setembro de 2026<br>
+      <strong>Commit:</strong> <code>df375d6</code> (main)<br>
+      <strong>Padrão:</strong> OWASP ASVS 5.0 / OWASP Top 10:2025<br>
+      <strong>Modo:</strong> STATIC_ONLY (Código-fonte local)
+    </div>
+  </header>
+
+  <!-- SUMÁRIO EXECUTIVO -->
+  <h2>1. Sumário Executivo & Veredicto</h2>
+  <p>
+    A auditoria técnica defensiva inspecionou o código-fonte estático e a arquitetura client-side do projeto <strong>ÁSPERUS</strong>. 
+    Por se tratar de uma aplicação puramente estática e orientada a gráficos (Three.js/WebGL e GSAP), a superfície clássica de ataques 
+    como injeção SQL no servidor e comprometimento de banco de dados não existe no repositório.
+  </p>
+  <p>
+    Os riscos identificados concentram-se na <strong>cadeia de suprimentos (dependências em CDNs externas sem verificação de hash SRI)</strong>, 
+    na <strong>ausência de Content Security Policy (CSP)</strong> e no <strong>processamento livre de entradas no assistente em página (PageAgent)</strong>. 
+    Nenhuma vulnerabilidade crítica de execução remota ou vazamento ativo de credenciais foi encontrada.
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric-card crit">
+      <div class="metric-value" style="color: var(--danger)">0</div>
+      <div class="metric-label">Crítica</div>
+    </div>
+    <div class="metric-card" style="border-color: #FF7043">
+      <div class="metric-value" style="color: #FF7043">0</div>
+      <div class="metric-label">Alta</div>
+    </div>
+    <div class="metric-card med">
+      <div class="metric-value" style="color: var(--warning)">2</div>
+      <div class="metric-label">Média</div>
+    </div>
+    <div class="metric-card low">
+      <div class="metric-value" style="color: var(--info)">2</div>
+      <div class="metric-label">Baixa</div>
+    </div>
+    <div class="metric-card info">
+      <div class="metric-value" style="color: var(--success)">2</div>
+      <div class="metric-label">Informativa / Positiva</div>
+    </div>
+  </div>
+
+  <!-- ACHADOS -->
+  <h2>2. Vulnerabilidades e Riscos Mapeados</h2>
+
+  <!-- FINDING 1 -->
+  <div class="finding-card">
+    <div class="finding-header">
+      <div class="finding-title">AUD-ASP-001: Inclusão de Scripts Externos sem Subresource Integrity (SRI)</div>
+      <span class="badge badge-med">Média (CVSS 6.8)</span>
+    </div>
+    <div class="didactic-box">
+      <strong>Entenda a brecha:</strong> O site baixa scripts de bibliotecas vitais (GSAP, ScrollTrigger, PageAgent) de servidores de terceiros sem validar a integridade do código. Caso a CDN seja invadida, o código adulterado roda com autoridade total na aba do visitante.
+    </div>
+    <div class="tech-box">
+      <div class="tech-meta">
+        <div><strong>Localização:</strong> index.html:311-348</div>
+        <div><strong>CWE:</strong> CWE-353</div>
+        <div><strong>OWASP:</strong> A03:2025 (Supply Chain)</div>
+        <div><strong>ASVS:</strong> V15.1.4</div>
+      </div>
+      <p><strong>Causa-raiz:</strong> Falta do atributo <code>integrity</code> com hash criptográfico SHA-384 nas tags <code>&lt;script&gt;</code> que carregam recursos remotos.</p>
+      <p><strong>Correção:</strong> Adicionar <code>crossorigin="anonymous"</code> e <code>integrity="sha384-..."</code> nas tags ou hospedar os arquivos localmente.</p>
+    </div>
+  </div>
+
+  <!-- FINDING 2 -->
+  <div class="finding-card">
+    <div class="finding-header">
+      <div class="finding-title">AUD-ASP-002: Entrada Livre e Não Sanitizada Encaminhada ao Assistente PageAgent</div>
+      <span class="badge badge-med">Média (CVSS 5.3)</span>
+    </div>
+    <div class="didactic-box">
+      <strong>Entenda a brecha:</strong> Qualquer texto digitado na barra de busca inteligente é repassado sem filtragem ao assistente autônomo (PageAgent). Por interagir com botões e campos do site, entradas patológicas podem desestabilizar a interface do cliente.
+    </div>
+    <div class="tech-box">
+      <div class="tech-meta">
+        <div><strong>Localização:</strong> js/app.js:492-498</div>
+        <div><strong>CWE:</strong> CWE-20 / CWE-79</div>
+        <div><strong>OWASP:</strong> A05:2025 (Injection)</div>
+        <div><strong>ASVS:</strong> V2.1.1</div>
+      </div>
+      <p><strong>Causa-raiz:</strong> Chamada direta de <code>agent.execute(query)</code> sem truncagem de tamanho ou remoção de caracteres de controle.</p>
+      <p><strong>Correção:</strong> Higienizar a string com allowlist/limpeza de caracteres especiais e limitar a 120 caracteres antes da chamada.</p>
+    </div>
+  </div>
+
+  <!-- FINDING 3 -->
+  <div class="finding-card">
+    <div class="finding-header">
+      <div class="finding-title">AUD-ASP-003: Ausência de Content Security Policy (CSP) e Diretivas de Referrer</div>
+      <span class="badge badge-med">Média (CVSS 5.1)</span>
+    </div>
+    <div class="didactic-box">
+      <strong>Entenda a brecha:</strong> O site não informa ao navegador quais domínios têm permissão para carregar dados ou conectar-se. Em caso de injeção acidental, não há barreira para impedir que dados sejam enviados para fora.
+    </div>
+    <div class="tech-box">
+      <div class="tech-meta">
+        <div><strong>Localização:</strong> index.html (seção head)</div>
+        <div><strong>CWE:</strong> CWE-1021</div>
+        <div><strong>OWASP:</strong> A02:2025 (Misconfiguration)</div>
+        <div><strong>ASVS:</strong> V3.1.1</div>
+      </div>
+      <p><strong>Causa-raiz:</strong> Ausência de cabeçalho ou meta tag <code>Content-Security-Policy</code> declarando origens autorizadas.</p>
+      <p><strong>Correção:</strong> Adicionar meta tag CSP no <code>&lt;head&gt;</code> restringindo scripts, estilos e conexões aos domínios estritamente necessários.</p>
+    </div>
+  </div>
+
+  <!-- FINDING 4 -->
+  <div class="finding-card">
+    <div class="finding-header">
+      <div class="finding-title">AUD-ASP-004: Formulário de Contato sem Tratamento Defensivo e Honeypot Anti-Spam</div>
+      <span class="badge badge-low">Baixa (CVSS 2.1)</span>
+    </div>
+    <div class="didactic-box">
+      <strong>Entenda a brecha:</strong> O formulário não possui tratamento com JavaScript para prevenir recarregamentos indesejados da página e não possui armadilha contra bots automáticos (honeypot).
+    </div>
+    <div class="tech-box">
+      <div class="tech-meta">
+        <div><strong>Localização:</strong> index.html:266-283</div>
+        <div><strong>CWE:</strong> CWE-799</div>
+        <div><strong>OWASP:</strong> A06:2025 (Insecure Design)</div>
+        <div><strong>ASVS:</strong> V2.2</div>
+      </div>
+      <p><strong>Correção:</strong> Implementar ouvinte <code>submit</code> no JS com <code>preventDefault()</code>, campo honeypot oculto e feedback direto ao usuário.</p>
+    </div>
+  </div>
+
+  <!-- FINDING 5 & 6 -->
+  <div class="finding-card">
+    <div class="finding-header">
+      <div class="finding-title">AUD-ASP-005 & 006: Exposição de Caminhos Locais em Script e Ausência de .gitignore</div>
+      <span class="badge badge-info">Informativa / Baixa</span>
+    </div>
+    <div class="didactic-box">
+      <strong>Entenda a brecha:</strong> O script batch do repositório continha caminhos absolutos locais com nomes de usuário do Windows, e o repositório não possuía <code>.gitignore</code> configurado para impedir inclusões futuras de arquivos sensíveis.
+    </div>
+    <div class="tech-box">
+      <p><strong>Correção:</strong> Criação de <code>.gitignore</code> completo na raiz e higienização dos caminhos do script batch.</p>
+    </div>
+  </div>
+
+  <!-- CONTROLES POSITIVOS -->
+  <h2>3. Controles Fortes Comprovados</h2>
+  <ul>
+    <li><strong>Zero Sinks de Injeção Direta:</strong> Manipulação de DOM segura exclusivamente através de <code>textContent</code>, sem uso de <code>eval()</code> ou <code>innerHTML</code> com entradas externas.</li>
+    <li><strong>Isolamento de Links Externos:</strong> Todos os links para novas abas utilizam <code>rel="noopener noreferrer"</code>.</li>
+    <li><strong>Criptografia em Trânsito:</strong> 100% dos assets e fontes carregados através de túneis HTTPS obrigatórios.</li>
+    <li><strong>Otimização e Liberação de GPU:</strong> Pausa automática de renderização WebGL via <code>IntersectionObserver</code> quando os elementos saem da tela.</li>
+  </ul>
+
+  <!-- ROADMAP -->
+  <h2>4. Roteiro Priorizado de Remediação</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Prazo</th>
+        <th>Ação Recomendada</th>
+        <th>Impacto de Risco</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>24h - 48h</strong></td>
+        <td>Criação do <code>.gitignore</code> e remoção de metadados locais</td>
+        <td>Prevenção de vazamento de segredos</td>
+        <td>Pronto para aplicação</td>
+      </tr>
+      <tr>
+        <td><strong>24h - 48h</strong></td>
+        <td>Aplicação de CSP e proteção de Referrer no HTML</td>
+        <td>Defesa em profundidade</td>
+        <td>Pronto para aplicação</td>
+      </tr>
+      <tr>
+        <td><strong>7 dias</strong></td>
+        <td>Sanitização de entradas no PageAgent e honeypot no formulário</td>
+        <td>Resiliência de interface e anti-spam</td>
+        <td>Pronto para aplicação</td>
+      </tr>
+      <tr>
+        <td><strong>30 dias</strong></td>
+        <td>Self-hosting local dos scripts de bibliotecas (Three.js e GSAP)</td>
+        <td>Eliminação de dependência de CDNs</td>
+        <td>Planejamento estratégico</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Relatório gerado em conformidade com o padrão OWASP ASVS 5.0 & OWASP Top 10:2025 para ÁSPERUS (Renato Maia).<br>
+    Repositório: <code>datomoliveira/asperus</code> | Confidencialidade: Exclusiva do proprietário.
+  </footer>
+</div>
+
+</body>
+</html>
